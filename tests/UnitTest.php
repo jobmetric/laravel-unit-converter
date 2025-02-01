@@ -107,7 +107,7 @@ class UnitTest extends BaseUnit
 
         $this->assertIsArray($unit);
         $this->assertFalse($unit['ok']);
-        $this->assertEquals($unit['message'], trans('unit::base.validation.errors'));
+        $this->assertEquals($unit['message'], trans('package-core::base.validation.errors'));
         $this->assertEquals(422, $unit['status']);
     }
 
