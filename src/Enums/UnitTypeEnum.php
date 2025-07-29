@@ -2,7 +2,7 @@
 
 namespace JobMetric\Unit\Enums;
 
-use JobMetric\PackageCore\Enums\EnumToArray;
+use JobMetric\PackageCore\Enums\EnumMacros;
 
 /**
  * @method static WEIGHT()
@@ -33,7 +33,7 @@ use JobMetric\PackageCore\Enums\EnumToArray;
  */
 enum UnitTypeEnum: string
 {
-    use EnumToArray;
+    use EnumMacros;
 
     case WEIGHT = "weight";                                                 /* واحد های وزن */
     case LENGTH = "length";                                                 /* واحد های طول */
