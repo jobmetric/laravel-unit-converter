@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use JobMetric\Media\Contracts\MediaContract;
 use JobMetric\Media\HasFile;
 use JobMetric\PackageCore\Models\HasBooleanStatus;
-use JobMetric\Translation\Contracts\TranslationContract;
 use JobMetric\Translation\HasTranslation;
 use JobMetric\Unit\Events\UnitMediaAllowCollectionEvent;
 
@@ -28,7 +27,7 @@ use JobMetric\Unit\Events\UnitMediaAllowCollectionEvent;
  * @method static Builder ofType(string $type)
  * @method static find(int $unit_id)
  */
-class Unit extends Model implements TranslationContract, MediaContract
+class Unit extends Model implements MediaContract
 {
     use HasFactory, HasBooleanStatus, HasTranslation, HasFile;
 
@@ -49,15 +48,17 @@ class Unit extends Model implements TranslationContract, MediaContract
         return config('unit.tables.unit', parent::getTable());
     }
 
-    public function translationAllowFields(): array
-    {
-        return [
-            'name',
-            'code',
-            'position',
-            'description',
-        ];
-    }
+    /**
+     * The attributes that are translatable.
+     *
+     * @var array<int, string>
+     */
+    protected array $translatables = [
+        'name',
+        'code',
+        'position',
+        'description',
+    ];
 
     /**
      * media allow collections.
