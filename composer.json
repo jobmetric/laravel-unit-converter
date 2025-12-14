@@ -1,5 +1,5 @@
 {
-    "name": "jobmetric/laravel-unit",
+    "name": "jobmetric/laravel-unit-converter",
     "description": "This is a unit management package for Laravel that you can use in your projects.",
     "type": "library",
     "license": "MIT",
@@ -8,9 +8,12 @@
         "jobmetric",
         "package",
         "unit",
-        "management"
+        "management",
+        "converter",
+        "measurement",
+        "conversion"
     ],
-    "homepage": "https://doc.jobmetric.net/package/laravel-unit",
+    "homepage": "https://doc.jobmetric.net/package/laravel-unit-converter",
     "authors": [
         {
             "name": "Majid Mohammadian",
@@ -32,25 +35,25 @@
             "src/helpers.php"
         ],
         "psr-4": {
-            "JobMetric\\Unit\\": "src/",
-            "JobMetric\\Unit\\Factories\\": "database/factories/",
-            "JobMetric\\Unit\\Seeders\\": "database/seeders/"
+            "JobMetric\\UnitConverter\\": "src/",
+            "JobMetric\\UnitConverter\\Factories\\": "database/factories/",
+            "JobMetric\\UnitConverter\\Seeders\\": "database/seeders/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "JobMetric\\Unit\\UnitServiceProvider"
+                "JobMetric\\UnitConverter\\UnitConverterServiceProvider"
             ],
             "aliases": {
-                "Unit": "JobMetric\\Unit\\Facades\\Unit"
+                "UnitConverter": "JobMetric\\UnitConverter\\Facades\\UnitConverter"
             }
         }
     },
     "minimum-stability": "stable",
     "support": {
-        "issues": "https://github.com/jobmetric/laravel-unit/issues",
+        "issues": "https://github.com/jobmetric/laravel-unit-converter/issues",
         "forum": "https://twitter.com/jobmetric",
-        "source": "https://github.com/jobmetric/laravel-unit"
+        "source": "https://github.com/jobmetric/laravel-unit-converter"
     }
 }

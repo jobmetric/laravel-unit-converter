@@ -1,12 +1,12 @@
-# Contributing to Job Metric Unit
+# Contributing to Job Metric Unit Converter
 
-Thank you for considering contributing to Unit! We appreciate your interest in making this project better and welcome your contributions.
+Thank you for considering contributing to Unit Converter! We appreciate your interest in making this project better and welcome your contributions.
 
 ## How to Contribute
 
 We believe that open collaboration leads to the best results. To contribute to the project, follow these steps:
 
-1. **Fork the repository**: Fork the Unit repository to your own GitHub account. This will create a copy of the project under your account.
+1. **Fork the repository**: Fork the Unit Converter repository to your own GitHub account. This will create a copy of the project under your account.
 
 2. **Clone the repository**: Clone the forked repository to your local machine using `git clone`. This allows you to work on the project locally.
 
@@ -18,7 +18,7 @@ We believe that open collaboration leads to the best results. To contribute to t
 
 6. **Commit your changes**: Once you are satisfied with your changes, commit them with clear and concise commit messages that explain the purpose of the changes.
 
-7. **Pull Request**: Push your changes to your forked repository and create a Pull Request (PR) to the `main` branch of the original Unit repository. Provide a detailed description of the changes you made, the problem you solved, and any other relevant information.
+7. **Pull Request**: Push your changes to your forked repository and create a Pull Request (PR) to the `main` branch of the original Unit Converter repository. Provide a detailed description of the changes you made, the problem you solved, and any other relevant information.
 
 8. **Code Review**: The project maintainers will review your Pull Request. Be prepared to make changes or address any feedback you receive during the review process.
 
@@ -38,10 +38,10 @@ We expect all contributors to adhere to our Code of Conduct. Be respectful, incl
 
 ## License
 
-By contributing to Unit, you agree that your contributions will be licensed under the same license as the project (if applicable). Make sure you understand and comply with the licensing terms before submitting your contributions.
+By contributing to Unit Converter, you agree that your contributions will be licensed under the same license as the project (if applicable). Make sure you understand and comply with the licensing terms before submitting your contributions.
 
 ## Acknowledgments
 
 Contributors play a vital role in the success of this project. Your efforts will be acknowledged in the project's documentation and release notes, and your GitHub profile will be listed as a contributor.
 
-Thank you for your interest in contributing to Unit. Together, we can build an amazing open-source community and make the project even better!
+Thank you for your interest in contributing to Unit Converter. Together, we can build an amazing open-source community and make the project even better!

@@ -1,11 +1,11 @@
-[contributors-shield]: https://img.shields.io/github/contributors/jobmetric/laravel-unit.svg?style=for-the-badge
-[contributors-url]: https://github.com/jobmetric/laravel-unit/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/jobmetric/laravel-unit.svg?style=for-the-badge&label=Fork
-[forks-url]: https://github.com/jobmetric/laravel-unit/network/members
-[stars-shield]: https://img.shields.io/github/stars/jobmetric/laravel-unit.svg?style=for-the-badge
-[stars-url]: https://github.com/jobmetric/laravel-unit/stargazers
-[license-shield]: https://img.shields.io/github/license/jobmetric/laravel-unit.svg?style=for-the-badge
-[license-url]: https://github.com/jobmetric/laravel-unit/blob/master/LICENCE.md
+[contributors-shield]: https://img.shields.io/github/contributors/jobmetric/laravel-unit-converter.svg?style=for-the-badge
+[contributors-url]: https://github.com/jobmetric/laravel-unit-converter/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/jobmetric/laravel-unit-converter.svg?style=for-the-badge&label=Fork
+[forks-url]: https://github.com/jobmetric/laravel-unit-converter/network/members
+[stars-shield]: https://img.shields.io/github/stars/jobmetric/laravel-unit-converter.svg?style=for-the-badge
+[stars-url]: https://github.com/jobmetric/laravel-unit-converter/stargazers
+[license-shield]: https://img.shields.io/github/license/jobmetric/laravel-unit-converter.svg?style=for-the-badge
+[license-url]: https://github.com/jobmetric/laravel-unit-converter/blob/master/LICENCE.md
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-blue.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://linkedin.com/in/majidmohammadian
 
@@ -24,7 +24,7 @@ This package provides a powerful and flexible tool for converting various units 
 Run the following command to pull in the latest version:
 
 ```bash
-composer require jobmetric/laravel-unit
+composer require jobmetric/laravel-unit-converter
 ```
 
 ## Documentation
@@ -37,15 +37,15 @@ php artisan migrate
 
 This package includes different parts that I will mention in order:
 
-- [Unit Service](https://github.com/jobmetric/laravel-unit/blob/master/docs/unit.md)
-- [Has Unit](https://github.com/jobmetric/laravel-unit/blob/master/docs/has-unit.md)
-- [Component](https://github.com/jobmetric/laravel-unit/blob/master/docs/component.md)
-- [Helper Function](https://github.com/jobmetric/laravel-unit/blob/master/docs/helper.md)
+- [Unit Service](https://github.com/jobmetric/laravel-unit-converter/blob/master/docs/unit.md)
+- [Has Unit](https://github.com/jobmetric/laravel-unit-converter/blob/master/docs/has-unit.md)
+- [Component](https://github.com/jobmetric/laravel-unit-converter/blob/master/docs/component.md)
+- [Helper Function](https://github.com/jobmetric/laravel-unit-converter/blob/master/docs/helper.md)
 
 ## Contributing
 
-Thank you for considering contributing to the Laravel Unit! The contribution guide can be found in the [CONTRIBUTING.md](https://github.com/jobmetric/laravel-unit/blob/master/CONTRIBUTING.md).
+Thank you for considering contributing to the Laravel Unit! The contribution guide can be found in the [CONTRIBUTING.md](https://github.com/jobmetric/laravel-unit-converter/blob/master/CONTRIBUTING.md).
 
 ## License
 
-The MIT License (MIT). Please see [License File](https://github.com/jobmetric/laravel-unit/blob/master/LICENCE.md) for more information.
+The MIT License (MIT). Please see [License File](https://github.com/jobmetric/laravel-unit-converter/blob/master/LICENCE.md) for more information.
