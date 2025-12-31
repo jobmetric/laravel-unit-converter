@@ -1,6 +1,6 @@
 <?php
 
-use JobMetric\Unit\Facades\Unit;
+use JobMetric\UnitConverter\Facades\UnitConverter;
 
 if (!function_exists('unitConvert')) {
     /**
@@ -15,6 +15,6 @@ if (!function_exists('unitConvert')) {
      */
     function unitConvert(int $from_unit_id, int $to_unit_id, float $value): float
     {
-        return Unit::convert($from_unit_id, $to_unit_id, $value);
+        return UnitConverter::convert($from_unit_id, $to_unit_id, $value);
     }
 }

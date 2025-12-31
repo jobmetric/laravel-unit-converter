@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use JobMetric\Unit\Enums\UnitTypeEnum;
+use JobMetric\UnitConverter\Enums\UnitTypeEnum;
 
 return new class extends Migration {
     /**

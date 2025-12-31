@@ -1,10 +1,10 @@
 <?php
 
-namespace JobMetric\Unit\Seeders;
+namespace JobMetric\UnitConverter\Seeders;
 
 use Illuminate\Database\Seeder;
-use JobMetric\Unit\Enums\UnitTypeEnum;
-use JobMetric\Unit\Facades\Unit;
+use JobMetric\UnitConverter\Enums\UnitTypeEnum;
+use JobMetric\UnitConverter\Facades\UnitConverter;
 
 class WeightUnitSeeder extends Seeder
 {
@@ -14,7 +14,7 @@ class WeightUnitSeeder extends Seeder
     public function run(): void
     {
         // gram
-        Unit::store([
+        UnitConverter::store([
             'type' => UnitTypeEnum::WEIGHT(),
             'value' => 1,
             'status' => true,
@@ -27,7 +27,7 @@ class WeightUnitSeeder extends Seeder
         ]);
 
         // kilogram
-        Unit::store([
+        UnitConverter::store([
             'type' => UnitTypeEnum::WEIGHT(),
             'value' => 1000,
             'status' => true,
@@ -40,7 +40,7 @@ class WeightUnitSeeder extends Seeder
         ]);
 
         // ton
-        Unit::store([
+        UnitConverter::store([
             'type' => UnitTypeEnum::WEIGHT(),
             'value' => 1000000,
             'status' => true,
@@ -53,7 +53,7 @@ class WeightUnitSeeder extends Seeder
         ]);
 
         // pound
-        Unit::store([
+        UnitConverter::store([
             'type' => UnitTypeEnum::WEIGHT(),
             'value' => 453.592,
             'status' => true,
@@ -66,7 +66,7 @@ class WeightUnitSeeder extends Seeder
         ]);
 
         // carat
-        Unit::store([
+        UnitConverter::store([
             'type' => UnitTypeEnum::WEIGHT(),
             'value' => 0.2,
             'status' => true,
@@ -79,7 +79,7 @@ class WeightUnitSeeder extends Seeder
         ]);
 
         // ounce
-        Unit::store([
+        UnitConverter::store([
             'type' => UnitTypeEnum::WEIGHT(),
             'value' => 28.3495,
             'status' => true,
@@ -92,7 +92,7 @@ class WeightUnitSeeder extends Seeder
         ]);
 
         // milligram
-        Unit::store([
+        UnitConverter::store([
             'type' => UnitTypeEnum::WEIGHT(),
             'value' => 0.001,
             'status' => true,
@@ -105,7 +105,7 @@ class WeightUnitSeeder extends Seeder
         ]);
 
         // centigram
-        Unit::store([
+        UnitConverter::store([
             'type' => UnitTypeEnum::WEIGHT(),
             'value' => 0.01,
             'status' => true,
@@ -118,7 +118,7 @@ class WeightUnitSeeder extends Seeder
         ]);
 
         // decigram
-        Unit::store([
+        UnitConverter::store([
             'type' => UnitTypeEnum::WEIGHT(),
             'value' => 0.1,
             'status' => true,
@@ -131,7 +131,7 @@ class WeightUnitSeeder extends Seeder
         ]);
 
         // dekagram
-        Unit::store([
+        UnitConverter::store([
             'type' => UnitTypeEnum::WEIGHT(),
             'value' => 10,
             'status' => true,
@@ -144,7 +144,7 @@ class WeightUnitSeeder extends Seeder
         ]);
 
         // megagram
-        Unit::store([
+        UnitConverter::store([
             'type' => UnitTypeEnum::WEIGHT(),
             'value' => 1000000,
             'status' => true,
@@ -157,7 +157,7 @@ class WeightUnitSeeder extends Seeder
         ]);
 
         // megatonne
-        Unit::store([
+        UnitConverter::store([
             'type' => UnitTypeEnum::WEIGHT(),
             'value' => 1000000000,
             'status' => true,
@@ -170,7 +170,7 @@ class WeightUnitSeeder extends Seeder
         ]);
 
         // microgram
-        Unit::store([
+        UnitConverter::store([
             'type' => UnitTypeEnum::WEIGHT(),
             'value' => 0.000001,
             'status' => true,

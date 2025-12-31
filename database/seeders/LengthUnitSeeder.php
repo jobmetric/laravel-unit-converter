@@ -1,10 +1,10 @@
 <?php
 
-namespace JobMetric\Unit\Seeders;
+namespace JobMetric\UnitConverter\Seeders;
 
 use Illuminate\Database\Seeder;
-use JobMetric\Unit\Enums\UnitTypeEnum;
-use JobMetric\Unit\Facades\Unit;
+use JobMetric\UnitConverter\Enums\UnitTypeEnum;
+use JobMetric\UnitConverter\Facades\UnitConverter;
 
 class LengthUnitSeeder extends Seeder
 {
@@ -14,7 +14,7 @@ class LengthUnitSeeder extends Seeder
     public function run(): void
     {
         // Meter
-        Unit::store([
+        UnitConverter::store([
             'type' => UnitTypeEnum::LENGTH(),
             'value' => 1,
             'status' => true,
@@ -27,7 +27,7 @@ class LengthUnitSeeder extends Seeder
         ]);
 
         // Centimeter
-        Unit::store([
+        UnitConverter::store([
             'type' => UnitTypeEnum::LENGTH(),
             'value' => 0.01,
             'status' => true,
@@ -40,7 +40,7 @@ class LengthUnitSeeder extends Seeder
         ]);
 
         // Kilometer
-        Unit::store([
+        UnitConverter::store([
             'type' => UnitTypeEnum::LENGTH(),
             'value' => 1000,
             'status' => true,
@@ -53,7 +53,7 @@ class LengthUnitSeeder extends Seeder
         ]);
 
         // Inch
-        Unit::store([
+        UnitConverter::store([
             'type' => UnitTypeEnum::LENGTH(),
             'value' => 0.0254,
             'status' => true,
@@ -66,7 +66,7 @@ class LengthUnitSeeder extends Seeder
         ]);
 
         // Foot - Feet
-        Unit::store([
+        UnitConverter::store([
             'type' => UnitTypeEnum::LENGTH(),
             'value' => 0.3048,
             'status' => true,
@@ -79,7 +79,7 @@ class LengthUnitSeeder extends Seeder
         ]);
 
         // Yard
-        Unit::store([
+        UnitConverter::store([
             'type' => UnitTypeEnum::LENGTH(),
             'value' => 0.9144,
             'status' => true,
@@ -92,7 +92,7 @@ class LengthUnitSeeder extends Seeder
         ]);
 
         // Mile
-        Unit::store([
+        UnitConverter::store([
             'type' => UnitTypeEnum::LENGTH(),
             'value' => 1609.34,
             'status' => true,
@@ -105,7 +105,7 @@ class LengthUnitSeeder extends Seeder
         ]);
 
         // Nautical Mile
-        Unit::store([
+        UnitConverter::store([
             'type' => UnitTypeEnum::LENGTH(),
             'value' => 1852,
             'status' => true,
@@ -118,7 +118,7 @@ class LengthUnitSeeder extends Seeder
         ]);
 
         // Point
-        Unit::store([
+        UnitConverter::store([
             'type' => UnitTypeEnum::LENGTH(),
             'value' => 0.000352778,
             'status' => true,
@@ -131,7 +131,7 @@ class LengthUnitSeeder extends Seeder
         ]);
 
         // Decimeter
-        Unit::store([
+        UnitConverter::store([
             'type' => UnitTypeEnum::LENGTH(),
             'value' => 0.1,
             'status' => true,
@@ -144,7 +144,7 @@ class LengthUnitSeeder extends Seeder
         ]);
 
         // Micron
-        Unit::store([
+        UnitConverter::store([
             'type' => UnitTypeEnum::LENGTH(),
             'value' => 0.000001,
             'status' => true,
@@ -157,7 +157,7 @@ class LengthUnitSeeder extends Seeder
         ]);
 
         // Militimeter
-        Unit::store([
+        UnitConverter::store([
             'type' => UnitTypeEnum::LENGTH(),
             'value' => 0.001,
             'status' => true,
@@ -170,7 +170,7 @@ class LengthUnitSeeder extends Seeder
         ]);
 
         // Micrometer
-        Unit::store([
+        UnitConverter::store([
             'type' => UnitTypeEnum::LENGTH(),
             'value' => 0.000001,
             'status' => true,
@@ -183,7 +183,7 @@ class LengthUnitSeeder extends Seeder
         ]);
 
         // Nanometer
-        Unit::store([
+        UnitConverter::store([
             'type' => UnitTypeEnum::LENGTH(),
             'value' => 0.000000001,
             'status' => true,
@@ -196,7 +196,7 @@ class LengthUnitSeeder extends Seeder
         ]);
 
         // Chain
-        Unit::store([
+        UnitConverter::store([
             'type' => UnitTypeEnum::LENGTH(),
             'value' => 20.1168,
             'status' => true,

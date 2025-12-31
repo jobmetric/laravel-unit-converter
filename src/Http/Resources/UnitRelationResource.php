@@ -1,10 +1,10 @@
 <?php
 
-namespace JobMetric\Unit\Http\Resources;
+namespace JobMetric\UnitConverter\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use JobMetric\Unit\Models\Unit;
+use JobMetric\UnitConverter\Models\Unit;
 
 /**
  * @property mixed unit_id

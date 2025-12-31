@@ -1,17 +1,17 @@
 <?php
 
-namespace JobMetric\Unit\Tests;
+namespace JobMetric\UnitConverter\Tests;
 
-use JobMetric\Unit\Enums\UnitTypeEnum;
-use JobMetric\Unit\Exceptions\CannotDeleteDefaultValueException;
-use JobMetric\Unit\Exceptions\UnitNotFoundException;
-use JobMetric\Unit\Exceptions\UnitTypeCannotChangeDefaultValueException;
-use JobMetric\Unit\Exceptions\UnitTypeDefaultValueException;
-use JobMetric\Unit\Exceptions\UnitTypeUseDefaultValueException;
-use JobMetric\Unit\Exceptions\UnitTypeUsedInException;
-use JobMetric\Unit\Facades\Unit;
-use JobMetric\Unit\Http\Resources\UnitRelationResource;
-use JobMetric\Unit\Http\Resources\UnitResource;
+use JobMetric\UnitConverter\Enums\UnitTypeEnum;
+use JobMetric\UnitConverter\Exceptions\CannotDeleteDefaultValueException;
+use JobMetric\UnitConverter\Exceptions\UnitNotFoundException;
+use JobMetric\UnitConverter\Exceptions\UnitTypeCannotChangeDefaultValueException;
+use JobMetric\UnitConverter\Exceptions\UnitTypeDefaultValueException;
+use JobMetric\UnitConverter\Exceptions\UnitTypeUseDefaultValueException;
+use JobMetric\UnitConverter\Exceptions\UnitTypeUsedInException;
+use JobMetric\UnitConverter\Facades\UnitConverter;
+use JobMetric\UnitConverter\Http\Resources\UnitRelationResource;
+use JobMetric\UnitConverter\Http\Resources\UnitResource;
 use Throwable;
 
 class UnitTest extends BaseUnit
@@ -23,7 +23,7 @@ class UnitTest extends BaseUnit
     {
         // store without default value
         try {
-            $unit = Unit::store([
+            $unit = UnitConverter::store([
                 'type' => UnitTypeEnum::WEIGHT(),
                 'value' => 1000,
                 'status' => true,
@@ -41,7 +41,7 @@ class UnitTest extends BaseUnit
         }
 
         // store with default value
-        $unit = Unit::store([
+        $unit = UnitConverter::store([
             'type' => UnitTypeEnum::WEIGHT(),
             'value' => 1,
             'status' => true,
@@ -66,7 +66,7 @@ class UnitTest extends BaseUnit
         ]);
 
         $this->assertDatabaseHas('translations', [
-            'translatable_type' => 'JobMetric\Unit\Models\Unit',
+            'translatable_type' => 'JobMetric\UnitConverter\Models\Unit',
             'translatable_id' => $unit['data']->id,
             'locale' => app()->getLocale(),
             'key' => 'name',
@@ -75,7 +75,7 @@ class UnitTest extends BaseUnit
 
         // store duplicate default value
         try {
-            $unit = Unit::store([
+            $unit = UnitConverter::store([
                 'type' => UnitTypeEnum::WEIGHT(),
                 'value' => 1,
                 'status' => true,
@@ -93,7 +93,7 @@ class UnitTest extends BaseUnit
         }
 
         // store duplicate name
-        $unit = Unit::store([
+        $unit = UnitConverter::store([
             'type' => UnitTypeEnum::WEIGHT(),
             'value' => 1000,
             'status' => true,
@@ -118,7 +118,7 @@ class UnitTest extends BaseUnit
     {
         // unit not found
         try {
-            $unit = Unit::update(1000, [
+            $unit = UnitConverter::update(1000, [
                 'value' => 1000,
                 'status' => true,
                 'translation' => [
@@ -135,7 +135,7 @@ class UnitTest extends BaseUnit
         }
 
         // store a unit
-        $unitStore = Unit::store([
+        $unitStore = UnitConverter::store([
             'type' => UnitTypeEnum::WEIGHT(),
             'value' => 1,
             'status' => true,
@@ -149,7 +149,7 @@ class UnitTest extends BaseUnit
 
         // update with duplicate value
         try {
-            $unit = Unit::update($unitStore['data']->id, [
+            $unit = UnitConverter::update($unitStore['data']->id, [
                 'value' => 1000,
                 'status' => true,
                 'translation' => [
@@ -166,7 +166,7 @@ class UnitTest extends BaseUnit
         }
 
         // update with another name
-        $unit = Unit::update($unitStore['data']->id, [
+        $unit = UnitConverter::update($unitStore['data']->id, [
             'status' => true,
             'translation' => [
                 'name' => 'Ounce',
@@ -190,7 +190,7 @@ class UnitTest extends BaseUnit
         ]);
 
         $this->assertDatabaseHas('translations', [
-            'translatable_type' => 'JobMetric\Unit\Models\Unit',
+            'translatable_type' => 'JobMetric\UnitConverter\Models\Unit',
             'translatable_id' => $unit['data']->id,
             'locale' => app()->getLocale(),
             'key' => 'name',
@@ -204,7 +204,7 @@ class UnitTest extends BaseUnit
     public function test_get()
     {
         // store a unit
-        $unitStore = Unit::store([
+        $unitStore = UnitConverter::store([
             'type' => UnitTypeEnum::WEIGHT(),
             'value' => 1,
             'status' => true,
@@ -217,7 +217,7 @@ class UnitTest extends BaseUnit
         ]);
 
         // get the unit
-        $unit = Unit::get($unitStore['data']->id);
+        $unit = UnitConverter::get($unitStore['data']->id);
 
         $this->assertIsArray($unit);
         $this->assertTrue($unit['ok']);
@@ -232,7 +232,7 @@ class UnitTest extends BaseUnit
 
         // get the unit with a wrong id
         try {
-            $unit = Unit::get(1000);
+            $unit = UnitConverter::get(1000);
 
             $this->assertIsArray($unit);
         } catch (Throwable $e) {
@@ -246,7 +246,7 @@ class UnitTest extends BaseUnit
     public function test_delete()
     {
         // store gram unit
-        $unitStoreGram = Unit::store([
+        $unitStoreGram = UnitConverter::store([
             'type' => UnitTypeEnum::WEIGHT(),
             'value' => 1,
             'status' => true,
@@ -259,7 +259,7 @@ class UnitTest extends BaseUnit
         ]);
 
         // store kilogram unit
-        $unitStoreKilogram = Unit::store([
+        $unitStoreKilogram = UnitConverter::store([
             'type' => UnitTypeEnum::WEIGHT(),
             'value' => 1000,
             'status' => true,
@@ -273,7 +273,7 @@ class UnitTest extends BaseUnit
 
         // delete the default unit
         try {
-            $unit = Unit::delete($unitStoreGram['data']->id);
+            $unit = UnitConverter::delete($unitStoreGram['data']->id);
 
             $this->assertIsArray($unit);
         } catch (Throwable $e) {
@@ -281,7 +281,7 @@ class UnitTest extends BaseUnit
         }
 
         // delete the kilogram unit
-        $unit = Unit::delete($unitStoreKilogram['data']->id);
+        $unit = UnitConverter::delete($unitStoreKilogram['data']->id);
 
         $this->assertIsArray($unit);
         $this->assertTrue($unit['ok']);
@@ -294,7 +294,7 @@ class UnitTest extends BaseUnit
 
         // delete the kilogram unit again
         try {
-            $unit = Unit::delete($unitStoreKilogram['data']->id);
+            $unit = UnitConverter::delete($unitStoreKilogram['data']->id);
 
             $this->assertIsArray($unit);
         } catch (Throwable $e) {
@@ -308,7 +308,7 @@ class UnitTest extends BaseUnit
 
         // delete the unit
         try {
-            $unit = Unit::delete($unitStoreGram['data']->id);
+            $unit = UnitConverter::delete($unitStoreGram['data']->id);
 
             $this->assertIsArray($unit);
         } catch (Throwable $e) {
@@ -322,7 +322,7 @@ class UnitTest extends BaseUnit
     public function test_change_default_value()
     {
         // Store gram unit
-        $unitStoreGram = Unit::store([
+        $unitStoreGram = UnitConverter::store([
             'type' => UnitTypeEnum::WEIGHT(),
             'value' => 1,
             'status' => true,
@@ -335,7 +335,7 @@ class UnitTest extends BaseUnit
         ]);
 
         // Store kilogram unit
-        $unitStoreKilogram = Unit::store([
+        $unitStoreKilogram = UnitConverter::store([
             'type' => UnitTypeEnum::WEIGHT(),
             'value' => 1000,
             'status' => true,
@@ -348,7 +348,7 @@ class UnitTest extends BaseUnit
         ]);
 
         // Store ton unit
-        $unitStoreTon = Unit::store([
+        $unitStoreTon = UnitConverter::store([
             'type' => UnitTypeEnum::WEIGHT(),
             'value' => 1000000,
             'status' => true,
@@ -362,7 +362,7 @@ class UnitTest extends BaseUnit
 
         // Change default value with wrong unit id
         try {
-            $changeDefaultValue = Unit::changeDefaultValue(1000);
+            $changeDefaultValue = UnitConverter::changeDefaultValue(1000);
 
             $this->assertIsArray($changeDefaultValue);
         } catch (Throwable $e) {
@@ -370,7 +370,7 @@ class UnitTest extends BaseUnit
         }
 
         // Change default value with kilogram unit id
-        $changeDefaultValue = Unit::changeDefaultValue($unitStoreKilogram['data']->id);
+        $changeDefaultValue = UnitConverter::changeDefaultValue($unitStoreKilogram['data']->id);
 
         $this->assertIsArray($changeDefaultValue);
         $this->assertTrue($changeDefaultValue['ok']);
@@ -402,7 +402,7 @@ class UnitTest extends BaseUnit
     public function test_all()
     {
         // Store a unit
-        Unit::store([
+        UnitConverter::store([
             'type' => UnitTypeEnum::WEIGHT(),
             'value' => 1,
             'status' => true,
@@ -415,7 +415,7 @@ class UnitTest extends BaseUnit
         ]);
 
         // Get the units
-        $getUnits = Unit::all();
+        $getUnits = UnitConverter::all();
 
         $this->assertCount(1, $getUnits);
 
@@ -430,7 +430,7 @@ class UnitTest extends BaseUnit
     public function test_pagination()
     {
         // Store a unit
-        Unit::store([
+        UnitConverter::store([
             'type' => UnitTypeEnum::WEIGHT(),
             'value' => 1,
             'status' => true,
@@ -443,7 +443,7 @@ class UnitTest extends BaseUnit
         ]);
 
         // Paginate the units
-        $paginateUnits = Unit::paginate();
+        $paginateUnits = UnitConverter::paginate();
 
         $this->assertCount(1, $paginateUnits);
 
@@ -466,7 +466,7 @@ class UnitTest extends BaseUnit
         $product = $this->create_product();
 
         // Store a unit
-        $unitStore = Unit::store([
+        $unitStore = UnitConverter::store([
             'type' => UnitTypeEnum::WEIGHT(),
             'value' => 1,
             'status' => true,
@@ -488,7 +488,7 @@ class UnitTest extends BaseUnit
         $this->assertEquals(200, $attachUnit['status']);
 
         // Get the unit used in the product
-        $usedIn = Unit::usedIn($unitStore['data']->id);
+        $usedIn = UnitConverter::usedIn($unitStore['data']->id);
 
         $this->assertIsArray($usedIn);
         $this->assertTrue($usedIn['ok']);
@@ -502,7 +502,7 @@ class UnitTest extends BaseUnit
 
         // Get the unit used in the product with a wrong unit id
         try {
-            $usedIn = Unit::usedIn(1000);
+            $usedIn = UnitConverter::usedIn(1000);
 
             $this->assertIsArray($usedIn);
         } catch (Throwable $e) {
@@ -518,7 +518,7 @@ class UnitTest extends BaseUnit
         $product = $this->create_product();
 
         // Store a unit
-        $unitStore = Unit::store([
+        $unitStore = UnitConverter::store([
             'type' => UnitTypeEnum::WEIGHT(),
             'value' => 1,
             'status' => true,
@@ -540,13 +540,13 @@ class UnitTest extends BaseUnit
         $this->assertEquals(200, $attachUnit['status']);
 
         // check has used in
-        $usedIn = Unit::hasUsed($unitStore['data']->id);
+        $usedIn = UnitConverter::hasUsed($unitStore['data']->id);
 
         $this->assertTrue($usedIn);
 
         // check with wrong unit id
         try {
-            $usedIn = Unit::hasUsed(1000);
+            $usedIn = UnitConverter::hasUsed(1000);
         } catch (Throwable $e) {
             $this->assertInstanceOf(UnitNotFoundException::class, $e);
         }
@@ -558,7 +558,7 @@ class UnitTest extends BaseUnit
     public function test_convert()
     {
         // Store a unit
-        $unitStore = Unit::store([
+        $unitStore = UnitConverter::store([
             'type' => UnitTypeEnum::WEIGHT(),
             'value' => 1,
             'status' => true,
@@ -571,7 +571,7 @@ class UnitTest extends BaseUnit
         ]);
 
         // Store another unit
-        $unitStore2 = Unit::store([
+        $unitStore2 = UnitConverter::store([
             'type' => UnitTypeEnum::WEIGHT(),
             'value' => 1000,
             'status' => true,
@@ -584,7 +584,7 @@ class UnitTest extends BaseUnit
         ]);
 
         // Store another unit
-        $unitStore3 = Unit::store([
+        $unitStore3 = UnitConverter::store([
             'type' => UnitTypeEnum::WEIGHT(),
             'value' => 1000000,
             'status' => true,
@@ -597,13 +597,13 @@ class UnitTest extends BaseUnit
         ]);
 
         // Convert the unit
-        $convert = Unit::convert($unitStore2['data']->id, $unitStore3['data']->id, 2);
+        $convert = UnitConverter::convert($unitStore2['data']->id, $unitStore3['data']->id, 2);
 
         $this->assertIsFloat($convert);
         $this->assertEquals(0.002, $convert);
 
         // Convert the unit
-        $convert = Unit::convert($unitStore['data']->id, $unitStore2['data']->id, 50);
+        $convert = UnitConverter::convert($unitStore['data']->id, $unitStore2['data']->id, 50);
 
         $this->assertIsFloat($convert);
         $this->assertEquals(0.05, $convert);

@@ -1,11 +1,11 @@
 <?php
 
-namespace JobMetric\Unit\View\Components;
+namespace JobMetric\UnitConverter\View\Components;
 
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
-use JobMetric\Unit\Models\Unit;
+use JobMetric\UnitConverter\Models\Unit;
 
 class Field extends Component
 {

@@ -1,8 +1,8 @@
 <?php
 
-namespace JobMetric\Unit\Events;
+namespace JobMetric\UnitConverter\Events;
 
-use JobMetric\Unit\Models\Unit;
+use JobMetric\UnitConverter\Models\Unit;
 
 class UnitUpdateEvent
 {

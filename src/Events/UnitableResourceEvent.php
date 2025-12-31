@@ -1,6 +1,6 @@
 <?php
 
-namespace JobMetric\Unit\Events;
+namespace JobMetric\UnitConverter\Events;
 
 class UnitableResourceEvent
 {

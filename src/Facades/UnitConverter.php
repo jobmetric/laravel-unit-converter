@@ -1,6 +1,6 @@
 <?php
 
-namespace JobMetric\Unit\Facades;
+namespace JobMetric\UnitConverter\Facades;
 
 use Illuminate\Support\Facades\Facade;
 
@@ -18,9 +18,9 @@ use Illuminate\Support\Facades\Facade;
  * @method static bool hasUsed(int $unit_id)
  * @method static float convert(int $from_unit_id, int $to_unit_id, float $value)
  *
- * @see \JobMetric\Unit\Unit
+ * @see \JobMetric\UnitConverter\Unit
  */
-class Unit extends Facade
+class UnitConverter extends Facade
 {
     /**
      * Get the registered name of the component.
@@ -29,6 +29,7 @@ class Unit extends Facade
      */
     protected static function getFacadeAccessor(): string
     {
-        return \JobMetric\Unit\Unit::class;
+        return \JobMetric\UnitConverter\Unit::class;
     }
 }
+

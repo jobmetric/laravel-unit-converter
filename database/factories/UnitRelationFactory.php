@@ -1,9 +1,9 @@
 <?php
 
-namespace JobMetric\Unit\Factories;
+namespace JobMetric\UnitConverter\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use JobMetric\Unit\Models\UnitRelation;
+use JobMetric\UnitConverter\Models\UnitRelation;
 
 /**
  * @extends Factory<UnitRelation>

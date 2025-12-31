@@ -1,6 +1,6 @@
 <?php
 
-namespace JobMetric\Unit\Exceptions;
+namespace JobMetric\UnitConverter\Exceptions;
 
 use Exception;
 use Throwable;

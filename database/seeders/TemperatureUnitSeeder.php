@@ -1,10 +1,10 @@
 <?php
 
-namespace JobMetric\Unit\Seeders;
+namespace JobMetric\UnitConverter\Seeders;
 
 use Illuminate\Database\Seeder;
-use JobMetric\Unit\Enums\UnitTypeEnum;
-use JobMetric\Unit\Facades\Unit;
+use JobMetric\UnitConverter\Enums\UnitTypeEnum;
+use JobMetric\UnitConverter\Facades\UnitConverter;
 
 class TemperatureUnitSeeder extends Seeder
 {
@@ -14,7 +14,7 @@ class TemperatureUnitSeeder extends Seeder
     public function run(): void
     {
         // Celsius
-        Unit::store([
+        UnitConverter::store([
             'type' => UnitTypeEnum::TEMPERATURE(),
             'value' => 1,
             'status' => true,

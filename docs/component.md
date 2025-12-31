@@ -2,9 +2,9 @@
 
 # Introduction to Unit Component
 
-This section of the documentation contains descriptions of the Field component and its associated view, implemented in the JobMetric\Unit package. This component is used to create an input field along with a units selector in forms.
+This section of the documentation contains descriptions of the Field component and its associated view, implemented in the JobMetric\UnitConverter package. This component is used to create an input field along with a units selector in forms.
 
-### Field class (in the path JobMetric\Unit\View\Components\Field)
+### Field class (in the path JobMetric\UnitConverter\View\Components\Field)
 
 The Field class is a `Blade component` in `Laravel` that allows the user to easily create a numeric input field with a dropdown of units. This component automatically loads and displays the entities associated with the specified data type.
 

@@ -1,10 +1,10 @@
 <?php
 
-namespace JobMetric\Unit\Factories;
+namespace JobMetric\UnitConverter\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use JobMetric\Unit\Enums\UnitTypeEnum;
-use JobMetric\Unit\Models\Unit;
+use JobMetric\UnitConverter\Enums\UnitTypeEnum;
+use JobMetric\UnitConverter\Models\Unit;
 
 /**
  * @extends Factory<Unit>

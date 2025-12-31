@@ -1,10 +1,10 @@
 <?php
 
-namespace JobMetric\Unit\Tests;
+namespace JobMetric\UnitConverter\Tests;
 
 use App\Models\Product;
-use JobMetric\Unit\Enums\UnitTypeEnum;
-use JobMetric\Unit\Facades\Unit;
+use JobMetric\UnitConverter\Enums\UnitTypeEnum;
+use JobMetric\UnitConverter\Facades\UnitConverter;
 use Throwable;
 
 class HasUnitTest extends BaseUnit
@@ -79,7 +79,7 @@ class HasUnitTest extends BaseUnit
     public function test_get_unit_value_by_type(): void
     {
         // Store a unit
-        $unitStoreGram = Unit::store([
+        $unitStoreGram = UnitConverter::store([
             'type' => UnitTypeEnum::WEIGHT(),
             'value' => 1,
             'status' => true,
@@ -92,7 +92,7 @@ class HasUnitTest extends BaseUnit
         ]);
 
         // Store another unit
-        $unitStoreKilogram = Unit::store([
+        $unitStoreKilogram = UnitConverter::store([
             'type' => UnitTypeEnum::WEIGHT(),
             'value' => 1000,
             'status' => true,
@@ -105,7 +105,7 @@ class HasUnitTest extends BaseUnit
         ]);
 
         // Store another unit
-        $unitStoreTon = Unit::store([
+        $unitStoreTon = UnitConverter::store([
             'type' => UnitTypeEnum::WEIGHT(),
             'value' => 1000000,
             'status' => true,

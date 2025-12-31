@@ -1,16 +1,16 @@
 <?php
 
-namespace JobMetric\Unit\Models;
+namespace JobMetric\UnitConverter\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\Relations\Pivot;
-use JobMetric\Unit\Events\UnitableResourceEvent;
+use JobMetric\UnitConverter\Events\UnitableResourceEvent;
 
 /**
- * JobMetric\Unit\Models\UnitRelation
+ * JobMetric\UnitConverter\Models\UnitRelation
  *
  * @property mixed unit_id
  * @property mixed unitable_type

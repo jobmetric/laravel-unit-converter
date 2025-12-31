@@ -27,7 +27,7 @@ return [
     ],
 
     "exceptions" => [
-        "model_unit_contract_not_found" => "Model ':model' not implements 'JobMetric\Unit\Contracts\UnitContract' interface!",
+        "model_unit_contract_not_found" => "Model ':model' not implements 'JobMetric\UnitConverter\Contracts\UnitContract' interface!",
         "unit_not_found" => "Unit ':number' not found!",
         "type_not_found_in_allow_types" => "Type ':type' not found in allowed types!",
         "unit_type_default_value" => "The desired ':unit' unit must have a default value of 1 in the first step and you cannot enter another value",

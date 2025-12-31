@@ -1,11 +1,11 @@
 <?php
 
-namespace JobMetric\Unit\Tests;
+namespace JobMetric\UnitConverter\Tests;
 
 use App\Models\Product;
-use JobMetric\Unit\Enums\UnitTypeEnum;
-use JobMetric\Unit\Facades\Unit;
-use JobMetric\Unit\Models\Unit as UnitModels;
+use JobMetric\UnitConverter\Enums\UnitTypeEnum;
+use JobMetric\UnitConverter\Facades\UnitConverter;
+use JobMetric\UnitConverter\Models\Unit as UnitModels;
 use Tests\BaseDatabaseTestCase as BaseTestCase;
 
 class BaseUnit extends BaseTestCase
@@ -27,7 +27,7 @@ class BaseUnit extends BaseTestCase
      */
     public function create_unit(): UnitModels
     {
-        Unit::store([
+        UnitConverter::store([
             'type' => UnitTypeEnum::WEIGHT(),
             'value' => 1,
             'status' => true,

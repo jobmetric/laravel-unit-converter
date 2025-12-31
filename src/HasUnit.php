@@ -1,16 +1,16 @@
 <?php
 
-namespace JobMetric\Unit;
+namespace JobMetric\UnitConverter;
 
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
-use JobMetric\Unit\Exceptions\ModelUnitContractNotFoundException;
-use JobMetric\Unit\Exceptions\TypeNotFoundInAllowTypesException;
-use JobMetric\Unit\Exceptions\UnitNotFoundException;
-use JobMetric\Unit\Exceptions\UnitTypeNotInUnitAllowTypesException;
-use JobMetric\Unit\Facades\Unit as UnitFacades;
-use JobMetric\Unit\Http\Resources\UnitResource;
-use JobMetric\Unit\Models\Unit;
-use JobMetric\Unit\Models\UnitRelation;
+use JobMetric\UnitConverter\Exceptions\ModelUnitContractNotFoundException;
+use JobMetric\UnitConverter\Exceptions\TypeNotFoundInAllowTypesException;
+use JobMetric\UnitConverter\Exceptions\UnitNotFoundException;
+use JobMetric\UnitConverter\Exceptions\UnitTypeNotInUnitAllowTypesException;
+use JobMetric\UnitConverter\Facades\UnitConverter as UnitConverterFacades;
+use JobMetric\UnitConverter\Http\Resources\UnitResource;
+use JobMetric\UnitConverter\Models\Unit;
+use JobMetric\UnitConverter\Models\UnitRelation;
 use Throwable;
 
 /**
@@ -32,7 +32,7 @@ trait HasUnit
      */
     public static function bootHasUnit(): void
     {
-        if (!in_array('JobMetric\Unit\Contracts\UnitContract', class_implements(self::class))) {
+        if (!in_array('JobMetric\UnitConverter\Contracts\UnitContract', class_implements(self::class))) {
             throw new ModelUnitContractNotFoundException(self::class);
         }
     }
@@ -197,7 +197,7 @@ trait HasUnit
 
         return [
             'translation' => $translation[app()->getLocale()],
-            'value' => UnitFacades::convert($unit_relation->unit_id, $convert_unit->id, $value)
+            'value' => UnitConverterFacades::convert($unit_relation->unit_id, $convert_unit->id, $value)
         ];
     }
 }

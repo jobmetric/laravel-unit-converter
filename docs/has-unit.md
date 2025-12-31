@@ -11,8 +11,8 @@ To use the HasUnit Trait, you need to add it to the model you want to use. For e
 ```php
 namespace App\Models;
 
-use JobMetric\Unit\HasUnit;
-use JobMetric\Unit\Contracts\UnitContract;
+use JobMetric\UnitConverter\HasUnit;
+use JobMetric\UnitConverter\Contracts\UnitContract;
 
 class Product extends Model implements UnitContract
 {

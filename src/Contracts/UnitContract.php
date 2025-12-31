@@ -1,6 +1,6 @@
 <?php
 
-namespace JobMetric\Unit\Contracts;
+namespace JobMetric\UnitConverter\Contracts;
 
 interface UnitContract
 {

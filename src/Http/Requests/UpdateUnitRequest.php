@@ -1,11 +1,11 @@
 <?php
 
-namespace JobMetric\Unit\Http\Requests;
+namespace JobMetric\UnitConverter\Http\Requests;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use JobMetric\Translation\Rules\TranslationFieldExistRule;
-use JobMetric\Unit\Models\Unit;
+use JobMetric\UnitConverter\Models\Unit;
 
 class UpdateUnitRequest extends FormRequest
 {

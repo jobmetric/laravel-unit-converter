@@ -1,10 +1,10 @@
 <?php
 
-namespace JobMetric\Unit\Seeders;
+namespace JobMetric\UnitConverter\Seeders;
 
 use Illuminate\Database\Seeder;
-use JobMetric\Unit\Enums\UnitTypeEnum;
-use JobMetric\Unit\Facades\Unit;
+use JobMetric\UnitConverter\Enums\UnitTypeEnum;
+use JobMetric\UnitConverter\Facades\UnitConverter;
 
 class VolumeUnitSeeder extends Seeder
 {
@@ -14,7 +14,7 @@ class VolumeUnitSeeder extends Seeder
     public function run(): void
     {
         // Liter
-        Unit::store([
+        UnitConverter::store([
             'type' => UnitTypeEnum::VOLUME(),
             'value' => 1,
             'status' => true,
@@ -27,7 +27,7 @@ class VolumeUnitSeeder extends Seeder
         ]);
 
         // kiloliter
-        Unit::store([
+        UnitConverter::store([
             'type' => UnitTypeEnum::VOLUME(),
             'value' => 1000,
             'status' => true,
@@ -40,7 +40,7 @@ class VolumeUnitSeeder extends Seeder
         ]);
 
         // mililiter
-        Unit::store([
+        UnitConverter::store([
             'type' => UnitTypeEnum::VOLUME(),
             'value' => 0.001,
             'status' => true,
@@ -53,7 +53,7 @@ class VolumeUnitSeeder extends Seeder
         ]);
 
         // deciliter
-        Unit::store([
+        UnitConverter::store([
             'type' => UnitTypeEnum::VOLUME(),
             'value' => 0.1,
             'status' => true,
@@ -66,7 +66,7 @@ class VolumeUnitSeeder extends Seeder
         ]);
 
         // centiliter
-        Unit::store([
+        UnitConverter::store([
             'type' => UnitTypeEnum::VOLUME(),
             'value' => 0.01,
             'status' => true,
@@ -79,7 +79,7 @@ class VolumeUnitSeeder extends Seeder
         ]);
 
         // microliter
-        Unit::store([
+        UnitConverter::store([
             'type' => UnitTypeEnum::VOLUME(),
             'value' => 0.000001,
             'status' => true,
@@ -92,7 +92,7 @@ class VolumeUnitSeeder extends Seeder
         ]);
 
         // nanoliter
-        Unit::store([
+        UnitConverter::store([
             'type' => UnitTypeEnum::VOLUME(),
             'value' => 0.000000001,
             'status' => true,
@@ -105,7 +105,7 @@ class VolumeUnitSeeder extends Seeder
         ]);
 
         // dekaliter
-        Unit::store([
+        UnitConverter::store([
             'type' => UnitTypeEnum::VOLUME(),
             'value' => 10,
             'status' => true,
@@ -118,7 +118,7 @@ class VolumeUnitSeeder extends Seeder
         ]);
 
         // cc
-        Unit::store([
+        UnitConverter::store([
             'type' => UnitTypeEnum::VOLUME(),
             'value' => 0.001,
             'status' => true,
@@ -131,7 +131,7 @@ class VolumeUnitSeeder extends Seeder
         ]);
 
         // cubic meter
-        Unit::store([
+        UnitConverter::store([
             'type' => UnitTypeEnum::VOLUME(),
             'value' => 1000,
             'status' => true,

@@ -1,6 +1,6 @@
 <?php
 
-namespace JobMetric\Unit\Enums;
+namespace JobMetric\UnitConverter\Enums;
 
 use JobMetric\PackageCore\Enums\EnumMacros;
 

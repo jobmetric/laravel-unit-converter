@@ -1,6 +1,6 @@
 <?php
 
-namespace JobMetric\Unit\Models;
+namespace JobMetric\UnitConverter\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -10,10 +10,10 @@ use JobMetric\Media\Contracts\MediaContract;
 use JobMetric\Media\HasFile;
 use JobMetric\PackageCore\Models\HasBooleanStatus;
 use JobMetric\Translation\HasTranslation;
-use JobMetric\Unit\Events\UnitMediaAllowCollectionEvent;
+use JobMetric\UnitConverter\Events\UnitMediaAllowCollectionEvent;
 
 /**
- * JobMetric\Unit\Models\Unit
+ * JobMetric\UnitConverter\Models\Unit
  *
  * @property mixed id
  * @property mixed type
