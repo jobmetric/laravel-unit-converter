@@ -8,8 +8,6 @@ use JobMetric\UnitConverter\Enums\UnitTypeEnum;
 return new class extends Migration {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
     public function up(): void
     {
@@ -18,15 +16,41 @@ return new class extends Migration {
 
             $table->string('type')->index();
             /**
-             * unit type
+             * type of measurement unit
              *
-             * value: weight, length, currency, number, crypto, ...
-             * use: @extends UnitTypeEnum
+             * @extends UnitTypeEnum
+             * expected values: weight, length, currency, number, crypto, volume, temperature, area, pressure, speed,
+             *                  force, time, torque, energy, frequency, power, acceleration, data_transfer, data_storage,
+             *                  angle, density, mass_flow, volumetric_flow, electric_current, heat_transfer_coefficient
+             *
+             * examples:
+             * - weight: gram, kilogram, ton, pound, ounce
+             * - length: meter, centimeter, kilometer, inch, foot, yard, mile
+             * - volume: liter, milliliter, gallon, quart
+             * - temperature: celsius, fahrenheit, kelvin
              */
 
             $table->decimal('value', 20, 10)->default(0);
+            /**
+             * conversion value relative to base unit
+             *
+             * - base unit for each type must have value = 1
+             * - other units are calculated relative to base unit
+             * - used for conversion: result = input_value * from_unit.value / to_unit.value
+             *
+             * examples:
+             * - base unit (gram): value = 1
+             * - kilogram: value = 1000 (1 kg = 1000 g)
+             * - ton: value = 1000000 (1 ton = 1000000 g)
+             */
 
             $table->boolean('status')->default(true)->index();
+            /**
+             * active status of unit
+             *
+             * - true = active, can be used for conversions
+             * - false = inactive, hidden from selection but preserved in database
+             */
 
             $table->timestamps();
         });
@@ -34,8 +58,6 @@ return new class extends Migration {
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
     public function down(): void
     {
