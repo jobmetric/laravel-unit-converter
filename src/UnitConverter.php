@@ -27,7 +27,7 @@ use JobMetric\UnitConverter\Models\UnitRelation;
 use Spatie\QueryBuilder\QueryBuilder;
 use Throwable;
 
-class Unit
+class UnitConverter
 {
     /**
      * The application instance.

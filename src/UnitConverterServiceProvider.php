@@ -2,12 +2,14 @@
 
 namespace JobMetric\UnitConverter;
 
-use Illuminate\Support\Facades\Blade;
 use JobMetric\PackageCore\Exceptions\MigrationFolderNotFoundException;
 use JobMetric\PackageCore\Exceptions\RegisterClassTypeNotFoundException;
 use JobMetric\PackageCore\PackageCore;
 use JobMetric\PackageCore\PackageCoreServiceProvider;
-use JobMetric\UnitConverter\View\Components\Field;
+use JobMetric\UnitConverter\Commands\UnitConvertCommand;
+use JobMetric\UnitConverter\Commands\UnitExportCommand;
+use JobMetric\UnitConverter\Commands\UnitListCommand;
+use JobMetric\UnitConverter\Commands\UnitSeedCommand;
 
 class UnitConverterServiceProvider extends PackageCoreServiceProvider
 {
@@ -20,22 +22,14 @@ class UnitConverterServiceProvider extends PackageCoreServiceProvider
      */
     public function configuration(PackageCore $package): void
     {
-        $package->name('laravel-unit')
+        $package->name('laravel-unit-converter')
             ->hasConfig()
             ->hasMigration()
             ->hasTranslation()
-            ->hasComponent()
-            ->registerClass('Unit', Unit::class);
-    }
-
-    /**
-     * After Boot Package
-     *
-     * @return void
-     */
-    public function afterBootPackage(): void
-    {
-        // add alias for components
-        Blade::component(Field::class, 'unit-field');
+            ->registerCommand(UnitConvertCommand::class)
+            ->registerCommand(UnitListCommand::class)
+            ->registerCommand(UnitSeedCommand::class)
+            ->registerCommand(UnitExportCommand::class)
+            ->registerClass('UnitConverter', UnitConverter::class);
     }
 }
