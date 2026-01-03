@@ -188,7 +188,7 @@ class UnitConverter extends AbstractCrudService
                 $translations['description'] = $data['translation']['description'];
             }
 
-            if (!empty($translations)) {
+            if (! empty($translations)) {
                 $unit->translate(app()->getLocale(), $translations);
             }
         }
@@ -258,7 +258,7 @@ class UnitConverter extends AbstractCrudService
     {
         $unit = UnitModel::query()->where('id', $unit_id)->first();
 
-        if (!$unit) {
+        if (! $unit) {
             throw new UnitNotFoundException($unit_id);
         }
 
@@ -280,12 +280,12 @@ class UnitConverter extends AbstractCrudService
      */
     public function get(int $unit_id, array $with = [], string $locale = null): Response
     {
-        if (!in_array('translations', $with)) {
+        if (! in_array('translations', $with)) {
             $with[] = 'translations';
         }
 
         global $translationLocale;
-        if (!is_null($locale)) {
+        if (! is_null($locale)) {
             $translationLocale = $locale;
         }
 
@@ -303,7 +303,7 @@ class UnitConverter extends AbstractCrudService
      */
     protected function show(int $id, array $with = [], ?string $mode = null): Response
     {
-        if (!in_array('translations', $with)) {
+        if (! in_array('translations', $with)) {
             $with[] = 'translations';
         }
 
@@ -327,7 +327,7 @@ class UnitConverter extends AbstractCrudService
             /** @var UnitModel $unit */
             $unit = UnitModel::find($unit_id);
 
-            if (!$unit) {
+            if (! $unit) {
                 throw new UnitNotFoundException($unit_id);
             }
 
@@ -358,7 +358,7 @@ class UnitConverter extends AbstractCrudService
         /** @var UnitModel $unit */
         $unit = UnitModel::find($unit_id);
 
-        if (!$unit) {
+        if (! $unit) {
             throw new UnitNotFoundException($unit_id);
         }
 
@@ -386,7 +386,7 @@ class UnitConverter extends AbstractCrudService
         /** @var UnitModel $unit */
         $unit = UnitModel::find($unit_id);
 
-        if (!$unit) {
+        if (! $unit) {
             throw new UnitNotFoundException($unit_id);
         }
 
@@ -403,7 +403,7 @@ class UnitConverter extends AbstractCrudService
      *
      * @param int $from_unit_id The source unit ID.
      * @param int $to_unit_id   The target unit ID.
-     * @param float $value       The value to convert.
+     * @param float $value      The value to convert.
      *
      * @return float The converted value.
      * @throws Throwable
@@ -413,14 +413,14 @@ class UnitConverter extends AbstractCrudService
         /** @var UnitModel $from_unit */
         $from_unit = UnitModel::find($from_unit_id);
 
-        if (!$from_unit) {
+        if (! $from_unit) {
             throw new UnitNotFoundException($from_unit_id);
         }
 
         /** @var UnitModel $to_unit */
         $to_unit = UnitModel::find($to_unit_id);
 
-        if (!$to_unit) {
+        if (! $to_unit) {
             throw new UnitNotFoundException($to_unit_id);
         }
 
