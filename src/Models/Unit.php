@@ -6,44 +6,72 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 use JobMetric\Media\Contracts\MediaContract;
 use JobMetric\Media\HasFile;
 use JobMetric\PackageCore\Models\HasBooleanStatus;
 use JobMetric\Translation\HasTranslation;
+use JobMetric\Translation\Models\Translation;
 use JobMetric\UnitConverter\Events\UnitMediaAllowCollectionEvent;
 
 /**
- * JobMetric\UnitConverter\Models\Unit
+ * Class Unit
  *
- * @property mixed id
- * @property mixed type
- * @property mixed value
- * @property mixed status
- * @property mixed created_at
- * @property mixed updated_at
+ * Represents a measurement unit that can be used for conversions.
+ * Each unit belongs to a specific type (weight, length, volume, etc.) and has
+ * a conversion value relative to the base unit of its type. Units support
+ * translations for name, code, position, and description. Units can be
+ * attached to any model using the HasUnit trait via polymorphic relations.
  *
- * @property UnitRelation[] unitRelations
+ * @package JobMetric\UnitConverter
  *
- * @method static Builder ofType(string $type)
- * @method static find(int $unit_id)
+ * @property int $id                         The primary identifier of the unit.
+ * @property string $type                    The type of measurement unit (weight, length, volume, etc.).
+ * @property float $value                    Conversion value relative to base unit (base unit = 1).
+ * @property bool $status                    Active flag (true=enabled, false=disabled).
+ * @property Carbon $created_at              The timestamp when this unit was created.
+ * @property Carbon $updated_at              The timestamp when this unit was last updated.
+ *
+ * @property-read UnitRelation[] $unitRelations
+ * @property-read Translation[] $translations
+ *
+ * @method static Builder|Unit ofType(string $type) Filter units by type.
+ * @method static Builder|Unit whereType(string $type)
+ * @method static Builder|Unit whereValue(float $value)
+ * @method static Builder|Unit whereStatus(bool $status)
  */
 class Unit extends Model implements MediaContract
 {
     use HasFactory, HasBooleanStatus, HasTranslation, HasFile;
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = [
         'type',
         'value',
-        'status'
+        'status',
     ];
 
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array<string, string>
+     */
     protected $casts = [
-        'type' => 'string',
-        'value' => 'decimal:15',
-        'status' => 'boolean'
+        'type'   => 'string',
+        'value'  => 'decimal:15',
+        'status' => 'boolean',
     ];
 
-    public function getTable()
+    /**
+     * Override the table name using config.
+     *
+     * @return string
+     */
+    public function getTable(): string
     {
         return config('unit.tables.unit', parent::getTable());
     }
@@ -61,21 +89,24 @@ class Unit extends Model implements MediaContract
     ];
 
     /**
-     * media allow collections.
+     * Get media collections allowed for this unit.
      *
-     * @return array
+     * Defines which media collections can be attached to this unit model.
+     * The configuration can be customized via UnitMediaAllowCollectionEvent.
+     *
+     * @return array<string, array>
      */
     public function mediaAllowCollections(): array
     {
         $event = new UnitMediaAllowCollectionEvent([
             'base' => [
                 'media_collection' => 'public',
-                'size' => [
+                'size'             => [
                     'default' => [
                         'w' => config('unit.default_image_size.width'),
                         'h' => config('unit.default_image_size.height'),
-                    ]
-                ]
+                    ],
+                ],
             ],
         ]);
 
@@ -84,16 +115,24 @@ class Unit extends Model implements MediaContract
         return $event->mediaAllowCollection;
     }
 
+    /**
+     * Get all relations where this unit is used.
+     *
+     * Returns all polymorphic relations where this unit is attached to models
+     * (e.g., products, orders, etc.) via the HasUnit trait.
+     *
+     * @return HasMany
+     */
     public function unitRelations(): HasMany
     {
         return $this->hasMany(UnitRelation::class, 'unit_id', 'id');
     }
 
     /**
-     * Scope a query to only include categories of a given type.
+     * Scope a query to only include units of a given type.
      *
      * @param Builder $query
-     * @param string $type
+     * @param string $type The unit type to filter by (e.g., 'weight', 'length').
      *
      * @return Builder
      */
