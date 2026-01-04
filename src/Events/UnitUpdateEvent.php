@@ -2,17 +2,42 @@
 
 namespace JobMetric\UnitConverter\Events;
 
+use JobMetric\EventSystem\Contracts\DomainEvent;
+use JobMetric\EventSystem\Support\DomainEventDefinition;
 use JobMetric\UnitConverter\Models\Unit;
 
-class UnitUpdateEvent
+readonly class UnitUpdateEvent implements DomainEvent
 {
     /**
      * Create a new event instance.
      */
     public function __construct(
-        public readonly Unit  $unit,
-        public readonly array $data
-    )
+        public Unit $unit,
+        public array $data
+    ) {
+    }
+
+    /**
+     * Returns the stable technical key for the domain event.
+     *
+     * @return string
+     */
+    public static function key(): string
     {
+        return 'unit.updated';
+    }
+
+    /**
+     * Returns the full metadata definition for this domain event.
+     *
+     * @return DomainEventDefinition
+     */
+    public static function definition(): DomainEventDefinition
+    {
+        return new DomainEventDefinition(self::key(), 'unit::base.events.unit_updated.group', 'unit::base.events.unit_updated.title', 'unit::base.events.unit_updated.description', 'fas fa-edit', [
+            'unit',
+            'storage',
+            'management',
+        ]);
     }
 }

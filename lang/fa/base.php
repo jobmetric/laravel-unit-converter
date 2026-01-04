@@ -12,6 +12,10 @@ return [
     |
     */
 
+    "entity_names" => [
+        "unit" => "واحد",
+    ],
+
     "validation" => [
     ],
 
@@ -70,5 +74,25 @@ return [
     "field_name" => "واحد :field",
     "field_enter" => "وارد کردن :field",
     "field_select" => "انتخاب یک :field",
+
+    "events" => [
+        "unit_deleted" => [
+            "group" => "واحد",
+            "title" => "حذف واحد",
+            "description" => "هنگامی که یک واحد حذف می‌شود، این رویداد فعال می‌شود.",
+        ],
+
+        "unit_stored" => [
+            "group" => "واحد",
+            "title" => "ذخیره واحد",
+            "description" => "هنگامی که یک واحد ذخیره می‌شود، این رویداد فعال می‌شود.",
+        ],
+
+        "unit_updated" => [
+            "group" => "واحد",
+            "title" => "به‌روزرسانی واحد",
+            "description" => "هنگامی که یک واحد به‌روزرسانی می‌شود، این رویداد فعال می‌شود.",
+        ],
+    ],
 
 ];

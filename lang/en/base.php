@@ -12,6 +12,10 @@ return [
     |
     */
 
+    "entity_names" => [
+        "unit" => "Unit",
+    ],
+
     "validation" => [
     ],
 
@@ -70,5 +74,25 @@ return [
     "field_name" => ":field Unit",
     "field_enter" => "Enter :field",
     "field_select" => "Select a :field",
+
+    "events" => [
+        "unit_deleted" => [
+            "group" => "Unit",
+            "title" => "Unit Deleted",
+            "description" => "This event is triggered when a Unit is deleted.",
+        ],
+
+        "unit_stored" => [
+            "group" => "Unit",
+            "title" => "Unit Stored",
+            "description" => "This event is triggered when a Unit is stored.",
+        ],
+
+        "unit_updated" => [
+            "group" => "Unit",
+            "title" => "Unit Updated",
+            "description" => "This event is triggered when a Unit is updated.",
+        ],
+    ],
 
 ];
