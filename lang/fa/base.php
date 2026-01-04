@@ -16,9 +16,6 @@ return [
         "unit" => "واحد",
     ],
 
-    "validation" => [
-    ],
-
     "messages" => [
         "found" => "واحد یافت شد.",
         "created" => "واحد با موفقیت ایجاد شد.",
@@ -70,10 +67,6 @@ return [
         "electric_current" => "جریان الکتریکی",
         "heat_transfer_coefficient" => "ضریب انتقال حرارت",
     ],
-
-    "field_name" => "واحد :field",
-    "field_enter" => "وارد کردن :field",
-    "field_select" => "انتخاب یک :field",
 
     "events" => [
         "unit_deleted" => [

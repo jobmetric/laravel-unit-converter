@@ -16,9 +16,6 @@ return [
         "unit" => "Unit",
     ],
 
-    "validation" => [
-    ],
-
     "messages" => [
         "found" => "Unit found.",
         "created" => "Unit created successfully.",
@@ -70,10 +67,6 @@ return [
         "electric_current" => "Electric Current",
         "heat_transfer_coefficient" => "Heat Transfer Coefficient",
     ],
-
-    "field_name" => ":field Unit",
-    "field_enter" => "Enter :field",
-    "field_select" => "Select a :field",
 
     "events" => [
         "unit_deleted" => [
