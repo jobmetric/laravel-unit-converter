@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\Relations\Pivot;
-use JobMetric\UnitConverter\Events\UnitableResourceEvent;
+use JobMetric\PackageCore\Traits\HasMorphResourceAttributes;
 
 /**
  * JobMetric\UnitConverter\Models\UnitRelation
@@ -27,7 +27,7 @@ use JobMetric\UnitConverter\Events\UnitableResourceEvent;
  */
 class UnitRelation extends Pivot
 {
-    use HasFactory;
+    use HasFactory, HasMorphResourceAttributes;
 
     const UPDATED_AT = null;
 
@@ -78,16 +78,5 @@ class UnitRelation extends Pivot
     public function scopeOfType(Builder $query, string $type): Builder
     {
         return $query->where('type', $type);
-    }
-
-    /**
-     * Get the unitable resource attribute.
-     */
-    public function getUnitableResourceAttribute()
-    {
-        $event = new UnitableResourceEvent($this->unitable);
-        event($event);
-
-        return $event->resource;
     }
 }
