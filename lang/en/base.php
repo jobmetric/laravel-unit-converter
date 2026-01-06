@@ -34,10 +34,10 @@ return [
         "unit_type_default_value" => "The desired ':unit' unit must have a default value of 1 in the first step and you cannot enter another value",
         "unit_type_use_default_value" => "You have already entered the default value and you can no longer use the value 1",
         "unit_type_cannot_change_default_value" => "You cannot change the default value",
-        "unit_type_not_in_unit_allow_types" => "Unit type ':type' not in unit allow types!",
         "unit_type_used_in" => "Unit number ':unit_id' used in ':number' places!",
         "cannot_delete_default_value" => "You cannot remove the default value until other items have been removed!",
         "from_and_to_must_same_type" => "The from and to of the conversion must be of the same type!",
+        "unit_value_zero" => "Cannot set a unit with zero value as the default unit!",
     ],
 
     "fields" => [

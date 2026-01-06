@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use JobMetric\UnitConverter\Exceptions\ModelUnitContractNotFoundException;
 use JobMetric\UnitConverter\Exceptions\TypeNotFoundInAllowTypesException;
 use JobMetric\UnitConverter\Exceptions\UnitNotFoundException;
-use JobMetric\UnitConverter\Exceptions\UnitTypeNotInUnitAllowTypesException;
 use JobMetric\UnitConverter\Facades\UnitConverter as UnitConverterFacades;
 use JobMetric\UnitConverter\Http\Resources\UnitResource;
 use JobMetric\UnitConverter\Models\Unit;
@@ -73,7 +72,7 @@ trait HasUnit
         $unitAllowTypes = $this->unitAllowTypes();
 
         if (!in_array($type, $unitAllowTypes)) {
-            throw new UnitTypeNotInUnitAllowTypesException($type);
+            throw new TypeNotFoundInAllowTypesException($type);
         }
 
         UnitRelation::query()->updateOrInsert([

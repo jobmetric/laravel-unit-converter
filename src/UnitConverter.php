@@ -17,6 +17,7 @@ use JobMetric\UnitConverter\Exceptions\UnitTypeCannotChangeDefaultValueException
 use JobMetric\UnitConverter\Exceptions\UnitTypeDefaultValueException;
 use JobMetric\UnitConverter\Exceptions\UnitTypeUseDefaultValueException;
 use JobMetric\UnitConverter\Exceptions\UnitTypeUsedInException;
+use JobMetric\UnitConverter\Exceptions\UnitValueZeroException;
 use JobMetric\UnitConverter\Http\Requests\StoreUnitRequest;
 use JobMetric\UnitConverter\Http\Requests\UpdateUnitRequest;
 use JobMetric\UnitConverter\Http\Resources\UnitRelationResource;
@@ -329,6 +330,20 @@ class UnitConverter extends AbstractCrudService
 
             if (! $unit) {
                 throw new UnitNotFoundException($unit_id);
+            }
+
+            if ($unit->value == 0) {
+                throw new UnitValueZeroException;
+            }
+
+            $check_used = $this->hasUsed($unit->id);
+
+            if ($check_used) {
+                $count = UnitRelation::query()->where([
+                    'unit_id' => $unit->id,
+                ])->count();
+
+                throw new UnitTypeUsedInException($unit->id, $count);
             }
 
             UnitModel::query()->where('type', $unit->type)->get()->each(function (UnitModel $item) use ($unit) {
