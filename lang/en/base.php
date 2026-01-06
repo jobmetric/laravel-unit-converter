@@ -27,6 +27,13 @@ return [
         "detached" => "Unit detached successfully.",
     ],
 
+    "validation" => [
+        "unit" => [
+            "translation_name_required" => "The translation name field is required.",
+            "name_duplicate_in_type" => "A unit with the name ':name' already exists in the :type type.",
+        ],
+    ],
+
     "exceptions" => [
         "model_unit_contract_not_found" => "Model ':model' not implements 'JobMetric\UnitConverter\Contracts\UnitContract' interface!",
         "unit_not_found" => "Unit ':number' not found!",
@@ -41,6 +48,14 @@ return [
     ],
 
     "fields" => [
+        "translation" => "Translation",
+        "name" => "Name",
+        "code" => "Code",
+        "position" => "Position",
+        "description" => "Description",
+        "type" => "Type",
+        "value" => "Value",
+        "status" => "Status",
         "weight" => "Weight",
         "length" => "Length",
         "currency" => "Currency",

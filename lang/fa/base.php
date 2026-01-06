@@ -27,6 +27,13 @@ return [
         "detached" => "واحد با موفقیت جدا شد.",
     ],
 
+    "validation" => [
+        "unit" => [
+            "translation_name_required" => "فیلد نام ترجمه الزامی است.",
+            "name_duplicate_in_type" => "واحدی با نام ':name' در نوع :type از قبل وجود دارد.",
+        ],
+    ],
+
     "exceptions" => [
         "model_unit_contract_not_found" => "مدل ':model' اینترفیس 'JobMetric\UnitConverter\Contracts\UnitContract' را پیاده‌سازی نکرده است!",
         "unit_not_found" => "واحد ':number' یافت نشد!",
@@ -41,6 +48,14 @@ return [
     ],
 
     "fields" => [
+        "translation" => "ترجمه",
+        "name" => "نام",
+        "code" => "کد",
+        "position" => "موقعیت",
+        "description" => "توضیحات",
+        "type" => "نوع",
+        "value" => "مقدار",
+        "status" => "وضعیت",
         "weight" => "وزن",
         "length" => "طول",
         "currency" => "ارز",

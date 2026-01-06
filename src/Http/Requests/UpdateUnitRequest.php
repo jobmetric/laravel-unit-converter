@@ -2,49 +2,183 @@
 
 namespace JobMetric\UnitConverter\Http\Requests;
 
-use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Validator;
+use JobMetric\Language\Facades\Language;
 use JobMetric\Translation\Rules\TranslationFieldExistRule;
-use JobMetric\UnitConverter\Models\Unit;
+use JobMetric\UnitConverter\Models\Unit as UnitModel;
 
 class UpdateUnitRequest extends FormRequest
 {
-    public int|null $unit_id = null;
-
     /**
-     * Determine if the user is authorized to make this request.
+     * External context (injected via dto()).
+     *
+     * @var array<string,mixed>
      */
-    public function authorize(): bool
+    protected array $context = [];
+
+    public function setContext(array $context): void
     {
-        return true;
+        $this->context = $context;
     }
 
     /**
-     * Get the validation rules that apply to the request.
+     * Build validation rules dynamically for active locales and scalar fields.
      *
-     * @return array<string, ValidationRule|array|string>
+     * @param array<string,mixed> $input
+     * @param array<string,mixed> $context
+     *
+     * @return array<string,mixed>
+     */
+    public static function rulesFor(array $input, array $context = []): array
+    {
+        $unitId = (int)($context['unit_id'] ?? $input['unit_id'] ?? null);
+
+        $rules = [
+            'translation' => 'sometimes|array',
+
+            'value' => 'sometimes|numeric',
+            'status' => 'sometimes|boolean',
+        ];
+
+        $locales = Language::getActiveLocales();
+
+        if (isset($input['translation']) && is_array($input['translation'])) {
+            foreach ($locales as $locale) {
+                if (!array_key_exists($locale, $input['translation'])) {
+                    continue;
+                }
+
+                $rules["translation.$locale"] = 'sometimes|array';
+                $rules["translation.$locale.name"] = [
+                    'required',
+                    'string',
+                    function ($attribute, $value, $fail) use ($locale, $unitId) {
+                        $name = trim((string)$value);
+
+                        if ($name === '') {
+                            $fail(trans('unit::base.validation.unit.translation_name_required'));
+
+                            return;
+                        }
+
+                        $rule = new TranslationFieldExistRule(UnitModel::class, 'name', $locale, $unitId, -1, [], 'unit::base.fields.name');
+
+                        if (!$rule->passes($attribute, $name)) {
+                            $fail($rule->message());
+                        }
+                    },
+                ];
+                $rules["translation.$locale.code"] = 'sometimes|string';
+                $rules["translation.$locale.position"] = 'sometimes|nullable|string|in:left,right';
+                $rules["translation.$locale.description"] = 'sometimes|nullable|string';
+            }
+        }
+
+        return $rules;
+    }
+
+    /**
+     * @return array<string,mixed>
      */
     public function rules(): array
     {
-        if (is_null($this->unit_id)) {
-            $unit_id = $this->route()->parameter('unit')?->id;
-        } else {
-            $unit_id = $this->unit_id;
+        $unitId = (int)($this->context['unit_id'] ?? $this->input('unit_id') ?? null);
+
+        if (is_null($unitId)) {
+            $unitId = $this->route()->parameter('unit')?->id;
         }
 
-        return [
-            'value' => 'sometimes|numeric',
-            'status' => 'sometimes|boolean|nullable',
+        return self::rulesFor($this->all(), [
+            'unit_id' => $unitId,
+        ]);
+    }
 
-            'translation' => 'sometimes|array',
-            'translation.name' => [
-                'sometimes',
-                'string',
-                new TranslationFieldExistRule(Unit::class, 'name', object_id: $unit_id),
-            ],
-            'translation.code' => 'sometimes|string',
-            'translation.position' => 'sometimes|string|in:left,right|nullable',
-            'translation.description' => 'sometimes|string|nullable',
+    /**
+     * Cross-field validation: check name uniqueness within the same type.
+     *
+     * @param Validator $validator
+     * @return void
+     */
+    public function withValidator($validator): void
+    {
+        $validator->after(function (Validator $v) {
+            $unitId = (int)($this->context['unit_id'] ?? $this->input('unit_id') ?? null);
+
+            if (is_null($unitId)) {
+                $unitId = $this->route()->parameter('unit')?->id;
+            }
+
+            if (!$unitId) {
+                return;
+            }
+
+            /** @var UnitModel $unit */
+            $unit = UnitModel::find($unitId);
+
+            if (!$unit) {
+                return;
+            }
+
+            $type = $unit->type;
+            $translation = $this->input('translation', []);
+
+            if (!is_array($translation)) {
+                return;
+            }
+
+            $locales = Language::getActiveLocales();
+
+            foreach ($locales as $locale) {
+                if (!isset($translation[$locale]['name'])) {
+                    continue;
+                }
+
+                $name = trim((string)$translation[$locale]['name']);
+
+                if ($name === '') {
+                    continue;
+                }
+
+                $exists = UnitModel::query()
+                    ->where('type', $type)
+                    ->where('id', '!=', $unitId)
+                    ->whereHas('translations', function ($query) use ($locale, $name) {
+                        $query->where('locale', $locale)
+                            ->where('field', 'name')
+                            ->where('value', $name);
+                    })
+                    ->exists();
+
+                if ($exists) {
+                    $v->errors()->add(
+                        "translation.$locale.name",
+                        trans('unit::base.validation.unit.name_duplicate_in_type', [
+                            'name' => $name,
+                            'type' => trans('unit::base.fields.' . $type),
+                        ])
+                    );
+                }
+            }
+        });
+    }
+
+    /**
+     * Attributes via language keys.
+     *
+     * @return array<string, string>
+     */
+    public function attributes(): array
+    {
+        return [
+            'translation' => trans('unit::base.fields.translation'),
+            'translation.*.name' => trans('unit::base.fields.name'),
+            'translation.*.code' => trans('unit::base.fields.code'),
+            'translation.*.position' => trans('unit::base.fields.position'),
+            'translation.*.description' => trans('unit::base.fields.description'),
+
+            'value' => trans('unit::base.fields.value'),
+            'status' => trans('unit::base.fields.status'),
         ];
     }
 
@@ -56,8 +190,13 @@ class UpdateUnitRequest extends FormRequest
      */
     public function setUnitId(int $unit_id): static
     {
-        $this->unit_id = $unit_id;
+        $this->context['unit_id'] = $unit_id;
 
         return $this;
+    }
+
+    public function authorize(): bool
+    {
+        return true;
     }
 }
