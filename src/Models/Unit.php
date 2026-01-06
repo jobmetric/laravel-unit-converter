@@ -12,7 +12,6 @@ use JobMetric\Media\HasFile;
 use JobMetric\PackageCore\Models\HasBooleanStatus;
 use JobMetric\Translation\HasTranslation;
 use JobMetric\Translation\Models\Translation;
-use JobMetric\UnitConverter\Events\UnitMediaAllowCollectionEvent;
 
 /**
  * Class Unit
@@ -87,33 +86,6 @@ class Unit extends Model implements MediaContract
         'position',
         'description',
     ];
-
-    /**
-     * Get media collections allowed for this unit.
-     *
-     * Defines which media collections can be attached to this unit model.
-     * The configuration can be customized via UnitMediaAllowCollectionEvent.
-     *
-     * @return array<string, array>
-     */
-    public function mediaAllowCollections(): array
-    {
-        $event = new UnitMediaAllowCollectionEvent([
-            'base' => [
-                'media_collection' => 'public',
-                'size'             => [
-                    'default' => [
-                        'w' => config('unit.default_image_size.width'),
-                        'h' => config('unit.default_image_size.height'),
-                    ],
-                ],
-            ],
-        ]);
-
-        event($event);
-
-        return $event->mediaAllowCollection;
-    }
 
     /**
      * Get all relations where this unit is used.
