@@ -97,7 +97,7 @@ class Unit extends Model implements MediaContract
      */
     public function unitRelations(): HasMany
     {
-        return $this->hasMany(UnitRelation::class, 'unit_id', 'id');
+        return $this->hasMany(UnitRelation::class, 'unit_id');
     }
 
     /**
@@ -111,5 +111,25 @@ class Unit extends Model implements MediaContract
     public function scopeOfType(Builder $query, string $type): Builder
     {
         return $query->where('type', $type);
+    }
+
+    /**
+     * media allow collections.
+     *
+     * @return array
+     */
+    public function mediaAllowCollections(): array
+    {
+        return [
+            'base' => [
+                'media_collection' => 'public',
+                'size'             => [
+                    'default' => [
+                        'w' => config('unit.default_image_size.width'),
+                        'h' => config('unit.default_image_size.height'),
+                    ],
+                ],
+            ],
+        ];
     }
 }
