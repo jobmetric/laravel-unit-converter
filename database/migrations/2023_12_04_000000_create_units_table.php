@@ -27,7 +27,7 @@ return new class extends Migration {
              * - weight: gram, kilogram, ton, pound, ounce
              * - length: meter, centimeter, kilometer, inch, foot, yard, mile
              * - volume: liter, milliliter, gallon, quart
-             * - temperature: celsius, fahrenheit, kelvin
+             * - temperature: Celsius, Fahrenheit, Kelvin
              */
 
             $table->decimal('value', 20, 10)->default(0);
