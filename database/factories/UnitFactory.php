@@ -21,9 +21,9 @@ class UnitFactory extends Factory
     public function definition(): array
     {
         return [
-            'type' => $this->faker->shuffleArray(UnitTypeEnum::values()),
-            'value' => 1,
-            'status' => $this->faker->boolean
+            'type'   => $this->faker->randomElement(UnitTypeEnum::values()),
+            'value'  => 1,
+            'status' => $this->faker->boolean(90),
         ];
     }
 
@@ -36,8 +36,8 @@ class UnitFactory extends Factory
      */
     public function setType(string $type): static
     {
-        return $this->state(fn(array $attributes) => [
-            'type' => $type
+        return $this->state(fn (array $attributes) => [
+            'type' => $type,
         ]);
     }
 
@@ -50,8 +50,8 @@ class UnitFactory extends Factory
      */
     public function setValue(float $value): static
     {
-        return $this->state(fn(array $attributes) => [
-            'value' => $value
+        return $this->state(fn (array $attributes) => [
+            'value' => $value,
         ]);
     }
 
@@ -64,8 +64,8 @@ class UnitFactory extends Factory
      */
     public function setStatus(bool $status): static
     {
-        return $this->state(fn(array $attributes) => [
-            'status' => $status
+        return $this->state(fn (array $attributes) => [
+            'status' => $status,
         ]);
     }
 }

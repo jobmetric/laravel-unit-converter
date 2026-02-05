@@ -2,6 +2,7 @@
 
 namespace JobMetric\UnitConverter\Factories;
 
+use DateTimeInterface;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use JobMetric\UnitConverter\Models\UnitRelation;
 
@@ -20,11 +21,12 @@ class UnitRelationFactory extends Factory
     public function definition(): array
     {
         return [
-            'unit_id' => null,
+            'unit_id'       => null,
             'unitable_type' => null,
-            'unitable_id' => null,
-            'type' => null,
-            'value' => $this->faker->randomNumber(3)
+            'unitable_id'   => null,
+            'type'          => null,
+            'value'         => $this->faker->randomFloat(3, 0, 999),
+            'created_at'    => $this->faker->dateTimeBetween('-30 days'),
         ];
     }
 
@@ -37,8 +39,8 @@ class UnitRelationFactory extends Factory
      */
     public function setUnitId(int $unit_id): static
     {
-        return $this->state(fn(array $attributes) => [
-            'unit_id' => $unit_id
+        return $this->state(fn (array $attributes) => [
+            'unit_id' => $unit_id,
         ]);
     }
 
@@ -52,9 +54,9 @@ class UnitRelationFactory extends Factory
      */
     public function setUnitable(string $unitable_type, int $unitable_id): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'unitable_type' => $unitable_type,
-            'unitable_id' => $unitable_id
+            'unitable_id'   => $unitable_id,
         ]);
     }
 
@@ -67,8 +69,8 @@ class UnitRelationFactory extends Factory
      */
     public function setType(string $type): static
     {
-        return $this->state(fn(array $attributes) => [
-            'type' => $type
+        return $this->state(fn (array $attributes) => [
+            'type' => $type,
         ]);
     }
 
@@ -81,8 +83,22 @@ class UnitRelationFactory extends Factory
      */
     public function setValue(float $value): static
     {
-        return $this->state(fn(array $attributes) => [
-            'value' => $value
+        return $this->state(fn (array $attributes) => [
+            'value' => $value,
+        ]);
+    }
+
+    /**
+     * set created_at
+     *
+     * @param DateTimeInterface|string $created_at
+     *
+     * @return static
+     */
+    public function setCreatedAt(DateTimeInterface|string $created_at): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'created_at' => $created_at,
         ]);
     }
 }
