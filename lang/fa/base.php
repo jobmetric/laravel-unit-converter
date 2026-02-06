@@ -35,7 +35,6 @@ return [
     ],
 
     "exceptions" => [
-        "model_unit_contract_not_found" => "مدل ':model' اینترفیس 'JobMetric\UnitConverter\Contracts\UnitContract' را پیاده‌سازی نکرده است!",
         "unit_not_found" => "واحد ':number' یافت نشد!",
         "type_not_found_in_allow_types" => "نوع ':type' در انواع مجاز یافت نشد!",
         "unit_type_default_value" => "واحد مورد نظر ':unit' باید در مرحله اول مقدار پیش‌فرض 1 داشته باشد و شما نمی‌توانید مقدار دیگری وارد کنید.",
