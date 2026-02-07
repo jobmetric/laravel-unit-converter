@@ -9,6 +9,13 @@ use JobMetric\Translation\Rules\TranslationFieldExistRule;
 use JobMetric\UnitConverter\Enums\UnitTypeEnum;
 use JobMetric\UnitConverter\Models\Unit as UnitModel;
 
+/**
+ * Class StoreUnitRequest
+ *
+ * Validation request for storing a new Unit.
+ *
+ * @package JobMetric\UnitConverter
+ */
 class StoreUnitRequest extends FormRequest
 {
     /**
@@ -21,8 +28,8 @@ class StoreUnitRequest extends FormRequest
         $rules = [
             'translation' => 'required|array',
 
-            'type' => 'required|string|in:' . implode(',', UnitTypeEnum::values()),
-            'value' => 'required|numeric',
+            'type'   => 'required|string|in:' . implode(',', UnitTypeEnum::values()),
+            'value'  => 'required|numeric',
             'status' => 'sometimes|boolean',
         ];
 
@@ -35,7 +42,7 @@ class StoreUnitRequest extends FormRequest
                 'required',
                 'string',
                 function ($attribute, $value, $fail) use ($locale) {
-                    $name = trim((string)$value);
+                    $name = trim((string) $value);
 
                     if ($name === '') {
                         $fail(trans('unit::base.validation.unit.translation_name_required'));
@@ -45,7 +52,7 @@ class StoreUnitRequest extends FormRequest
 
                     $rule = new TranslationFieldExistRule(UnitModel::class, 'name', $locale, null, -1, [], 'unit::base.fields.name');
 
-                    if (!$rule->passes($attribute, $name)) {
+                    if (! $rule->passes($attribute, $name)) {
                         $fail($rule->message());
                     }
                 },
@@ -62,6 +69,7 @@ class StoreUnitRequest extends FormRequest
      * Cross-field validation: check name uniqueness within the same type.
      *
      * @param Validator $validator
+     *
      * @return void
      */
     public function withValidator($validator): void
@@ -70,40 +78,36 @@ class StoreUnitRequest extends FormRequest
             $type = $this->input('type');
             $translation = $this->input('translation', []);
 
-            if (!$type || !is_array($translation)) {
+            if (! $type || ! is_array($translation)) {
                 return;
             }
 
             $locales = Language::getActiveLocales();
 
             foreach ($locales as $locale) {
-                if (!isset($translation[$locale]['name'])) {
+                if (! isset($translation[$locale]['name'])) {
                     continue;
                 }
 
-                $name = trim((string)$translation[$locale]['name']);
+                $name = trim((string) $translation[$locale]['name']);
 
                 if ($name === '') {
                     continue;
                 }
 
-                $exists = UnitModel::query()
-                    ->where('type', $type)
-                    ->whereHas('translations', function ($query) use ($locale, $name) {
-                        $query->where('locale', $locale)
-                            ->where('field', 'name')
-                            ->where('value', $name);
-                    })
-                    ->exists();
+                $exists = UnitModel::query()->where('type', $type)->whereHas('translations', function ($query) use (
+                        $locale,
+                        $name
+                    ) {
+                        $query->where('locale', $locale)->where('field', 'name')->where('value', $name);
+                    })->exists();
 
                 if ($exists) {
-                    $v->errors()->add(
-                        "translation.$locale.name",
-                        trans('unit::base.validation.unit.name_duplicate_in_type', [
-                            'name' => $name,
-                            'type' => trans('unit::base.fields.' . $type),
-                        ])
-                    );
+                    $v->errors()
+                        ->add("translation.$locale.name", trans('unit::base.validation.unit.name_duplicate_in_type', [
+                                'name' => $name,
+                                'type' => trans('unit::base.fields.' . $type),
+                            ]));
                 }
             }
         });
@@ -117,44 +121,23 @@ class StoreUnitRequest extends FormRequest
     public function attributes(): array
     {
         return [
-            'translation' => trans('unit::base.fields.translation'),
-            'translation.*.name' => trans('unit::base.fields.name'),
-            'translation.*.code' => trans('unit::base.fields.code'),
-            'translation.*.position' => trans('unit::base.fields.position'),
+            'translation'               => trans('unit::base.fields.translation'),
+            'translation.*.name'        => trans('unit::base.fields.name'),
+            'translation.*.code'        => trans('unit::base.fields.code'),
+            'translation.*.position'    => trans('unit::base.fields.position'),
             'translation.*.description' => trans('unit::base.fields.description'),
 
-            'type' => trans('unit::base.fields.type'),
-            'value' => trans('unit::base.fields.value'),
+            'type'   => trans('unit::base.fields.type'),
+            'value'  => trans('unit::base.fields.value'),
             'status' => trans('unit::base.fields.status'),
         ];
     }
 
     /**
-     * Prepare the data for validation.
+     * Determine if the user is authorized to make this request.
      *
-     * @return void
+     * @return bool
      */
-    protected function prepareForValidation(): void
-    {
-        $data = [
-            'status' => $this->status ?? true,
-        ];
-
-        if ($this->has('translation') && is_array($this->translation)) {
-            $locales = Language::getActiveLocales();
-
-            foreach ($locales as $locale) {
-                if (isset($this->translation[$locale]) && is_array($this->translation[$locale])) {
-                    if (!isset($this->translation[$locale]['position'])) {
-                        $data["translation.$locale.position"] = 'left';
-                    }
-                }
-            }
-        }
-
-        $this->merge($data);
-    }
-
     public function authorize(): bool
     {
         return true;

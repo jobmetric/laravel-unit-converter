@@ -8,15 +8,29 @@ use JobMetric\Language\Facades\Language;
 use JobMetric\Translation\Rules\TranslationFieldExistRule;
 use JobMetric\UnitConverter\Models\Unit as UnitModel;
 
+/**
+ * Class UpdateUnitRequest
+ *
+ * Validation request for updating an existing Unit.
+ *
+ * @package JobMetric\UnitConverter
+ */
 class UpdateUnitRequest extends FormRequest
 {
     /**
      * External context (injected via dto()).
      *
-     * @var array<string,mixed>
+     * @var array<string, mixed>
      */
     protected array $context = [];
 
+    /**
+     * Set external context.
+     *
+     * @param array<string, mixed> $context
+     *
+     * @return void
+     */
     public function setContext(array $context): void
     {
         $this->context = $context;
@@ -25,19 +39,19 @@ class UpdateUnitRequest extends FormRequest
     /**
      * Build validation rules dynamically for active locales and scalar fields.
      *
-     * @param array<string,mixed> $input
-     * @param array<string,mixed> $context
+     * @param array<string, mixed> $input
+     * @param array<string, mixed> $context
      *
-     * @return array<string,mixed>
+     * @return array<string, mixed>
      */
     public static function rulesFor(array $input, array $context = []): array
     {
-        $unitId = (int)($context['unit_id'] ?? $input['unit_id'] ?? null);
+        $unitId = (int) ($context['unit_id'] ?? $input['unit_id'] ?? null);
 
         $rules = [
             'translation' => 'sometimes|array',
 
-            'value' => 'sometimes|numeric',
+            'value'  => 'sometimes|numeric',
             'status' => 'sometimes|boolean',
         ];
 
@@ -45,7 +59,7 @@ class UpdateUnitRequest extends FormRequest
 
         if (isset($input['translation']) && is_array($input['translation'])) {
             foreach ($locales as $locale) {
-                if (!array_key_exists($locale, $input['translation'])) {
+                if (! array_key_exists($locale, $input['translation'])) {
                     continue;
                 }
 
@@ -54,7 +68,7 @@ class UpdateUnitRequest extends FormRequest
                     'required',
                     'string',
                     function ($attribute, $value, $fail) use ($locale, $unitId) {
-                        $name = trim((string)$value);
+                        $name = trim((string) $value);
 
                         if ($name === '') {
                             $fail(trans('unit::base.validation.unit.translation_name_required'));
@@ -64,7 +78,7 @@ class UpdateUnitRequest extends FormRequest
 
                         $rule = new TranslationFieldExistRule(UnitModel::class, 'name', $locale, $unitId, -1, [], 'unit::base.fields.name');
 
-                        if (!$rule->passes($attribute, $name)) {
+                        if (! $rule->passes($attribute, $name)) {
                             $fail($rule->message());
                         }
                     },
@@ -79,15 +93,13 @@ class UpdateUnitRequest extends FormRequest
     }
 
     /**
-     * @return array<string,mixed>
+     * Get the validation rules that apply to the request.
+     *
+     * @return array<string, mixed>
      */
     public function rules(): array
     {
-        $unitId = (int)($this->context['unit_id'] ?? $this->input('unit_id') ?? null);
-
-        if (is_null($unitId)) {
-            $unitId = $this->route()->parameter('unit')?->id;
-        }
+        $unitId = $this->getUnitId();
 
         return self::rulesFor($this->all(), [
             'unit_id' => $unitId,
@@ -98,43 +110,40 @@ class UpdateUnitRequest extends FormRequest
      * Cross-field validation: check name uniqueness within the same type.
      *
      * @param Validator $validator
+     *
      * @return void
      */
     public function withValidator($validator): void
     {
         $validator->after(function (Validator $v) {
-            $unitId = (int)($this->context['unit_id'] ?? $this->input('unit_id') ?? null);
+            $unitId = $this->getUnitId();
 
-            if (is_null($unitId)) {
-                $unitId = $this->route()->parameter('unit')?->id;
-            }
-
-            if (!$unitId) {
+            if (! $unitId) {
                 return;
             }
 
-            /** @var UnitModel $unit */
+            /** @var UnitModel|null $unit */
             $unit = UnitModel::find($unitId);
 
-            if (!$unit) {
+            if (! $unit) {
                 return;
             }
 
             $type = $unit->type;
             $translation = $this->input('translation', []);
 
-            if (!is_array($translation)) {
+            if (! is_array($translation)) {
                 return;
             }
 
             $locales = Language::getActiveLocales();
 
             foreach ($locales as $locale) {
-                if (!isset($translation[$locale]['name'])) {
+                if (! isset($translation[$locale]['name'])) {
                     continue;
                 }
 
-                $name = trim((string)$translation[$locale]['name']);
+                $name = trim((string) $translation[$locale]['name']);
 
                 if ($name === '') {
                     continue;
@@ -144,20 +153,16 @@ class UpdateUnitRequest extends FormRequest
                     ->where('type', $type)
                     ->where('id', '!=', $unitId)
                     ->whereHas('translations', function ($query) use ($locale, $name) {
-                        $query->where('locale', $locale)
-                            ->where('field', 'name')
-                            ->where('value', $name);
+                        $query->where('locale', $locale)->where('field', 'name')->where('value', $name);
                     })
                     ->exists();
 
                 if ($exists) {
-                    $v->errors()->add(
-                        "translation.$locale.name",
-                        trans('unit::base.validation.unit.name_duplicate_in_type', [
+                    $v->errors()
+                        ->add("translation.$locale.name", trans('unit::base.validation.unit.name_duplicate_in_type', [
                             'name' => $name,
                             'type' => trans('unit::base.fields.' . $type),
-                        ])
-                    );
+                        ]));
                 }
             }
         });
@@ -171,30 +176,52 @@ class UpdateUnitRequest extends FormRequest
     public function attributes(): array
     {
         return [
-            'translation' => trans('unit::base.fields.translation'),
-            'translation.*.name' => trans('unit::base.fields.name'),
-            'translation.*.code' => trans('unit::base.fields.code'),
-            'translation.*.position' => trans('unit::base.fields.position'),
+            'translation'               => trans('unit::base.fields.translation'),
+            'translation.*.name'        => trans('unit::base.fields.name'),
+            'translation.*.code'        => trans('unit::base.fields.code'),
+            'translation.*.position'    => trans('unit::base.fields.position'),
             'translation.*.description' => trans('unit::base.fields.description'),
 
-            'value' => trans('unit::base.fields.value'),
+            'value'  => trans('unit::base.fields.value'),
             'status' => trans('unit::base.fields.status'),
         ];
     }
 
     /**
-     * Set unit id for validation
+     * Get unit ID from context, input, or route parameter.
      *
-     * @param int $unit_id
+     * @return int|null
+     */
+    protected function getUnitId(): ?int
+    {
+        $unitId = $this->context['unit_id'] ?? $this->input('unit_id') ?? null;
+
+        if ($unitId === null) {
+            $unitId = $this->route('unit')?->id ?? $this->route('unit');
+        }
+
+        return $unitId ? (int) $unitId : null;
+    }
+
+    /**
+     * Set unit id for validation.
+     *
+     * @param int $unitId
+     *
      * @return static
      */
-    public function setUnitId(int $unit_id): static
+    public function setUnitId(int $unitId): static
     {
-        $this->context['unit_id'] = $unit_id;
+        $this->context['unit_id'] = $unitId;
 
         return $this;
     }
 
+    /**
+     * Determine if the user is authorized to make this request.
+     *
+     * @return bool
+     */
     public function authorize(): bool
     {
         return true;
