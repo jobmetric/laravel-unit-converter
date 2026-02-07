@@ -4,7 +4,7 @@ use JobMetric\UnitConverter\Facades\UnitConverter;
 
 if (!function_exists('unitConvert')) {
     /**
-     * unit convert
+     * Convert a value between units.
      *
      * @param int $from_unit_id
      * @param int $to_unit_id
