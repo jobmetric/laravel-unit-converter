@@ -30,6 +30,6 @@ class UnitConverterServiceProvider extends PackageCoreServiceProvider
             ->registerCommand(UnitListCommand::class)
             ->registerCommand(UnitSeedCommand::class)
             ->registerCommand(UnitExportCommand::class)
-            ->registerClass('UnitConverter', UnitConverter::class);
+            ->registerClass('unit-converter', UnitConverter::class);
     }
 }
