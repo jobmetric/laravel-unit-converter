@@ -2,11 +2,11 @@
 
 namespace JobMetric\UnitConverter;
 
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use JobMetric\PackageCore\Output\Response;
 use JobMetric\PackageCore\Services\AbstractCrudService;
+use JobMetric\Translation\HasServiceTranslation;
 use JobMetric\UnitConverter\Events\UnitDeleteEvent;
 use JobMetric\UnitConverter\Events\UnitStoreEvent;
 use JobMetric\UnitConverter\Events\UnitUpdateEvent;
@@ -30,23 +30,23 @@ use Throwable;
  * Class UnitConverter
  *
  * CRUD and management service for Unit entities.
- * Responsibilities:
- * - Validate & normalize payloads via Request classes
- * - Handle unit conversion between different units of the same type
- * - Manage default unit values per type (first unit must have value = 1)
- * - Fire domain events on mutations
- * - Provide helpers for conversion, default value management, and usage tracking
  *
- * @package JobMetric\UnitConverter
+ * Notes:
+ * - A unit "type" represents an isolated conversion family (e.g., weight, length).
+ * - Each type must have exactly one base unit with value = 1.
+ * - All conversions are performed inside the same type.
  */
 class UnitConverter extends AbstractCrudService
 {
+    use HasServiceTranslation;
+
     /**
      * Human-readable entity name key used in response messages.
      *
      * @var string
      */
     protected string $entityName = 'unit::base.entity_names.unit';
+
 
     /**
      * Bound model/resource classes for the base CRUD.
@@ -80,10 +80,24 @@ class UnitConverter extends AbstractCrudService
     protected static ?string $deleteEventClass = UnitDeleteEvent::class;
 
     /**
+     * Constructor.
+     * Initialize translation defaults.
+     */
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this->translationDefaults = [
+            'position' => 'left',
+        ];
+    }
+
+    /**
      * Mutate/validate payload before create.
      *
-     * Role: ensures a clean, validated input for store().
-     * Validates that the first unit of a type has value = 1 (base unit).
+     * Ensures:
+     * - The first unit created for a given type must be the base unit (value = 1).
+     * - Once a base unit exists, no other unit in the same type can use value = 1.
      *
      * @param array<string,mixed> $data
      *
@@ -94,13 +108,13 @@ class UnitConverter extends AbstractCrudService
     {
         $data = dto($data, StoreUnitRequest::class);
 
-        $unit_count_in_type = UnitModel::query()->where('type', $data['type'])->count();
+        $existsInType = UnitModel::query()->where('type', $data['type'])->exists();
 
-        if ($unit_count_in_type == 0 && $data['value'] != 1) {
+        if (! $existsInType && (float) $data['value'] !== 1.0) {
             throw new UnitTypeDefaultValueException($data['type']);
         }
 
-        if ($unit_count_in_type >= 1 && $data['value'] == 1) {
+        if ($existsInType && (float) $data['value'] === 1.0) {
             throw new UnitTypeUseDefaultValueException($data['type']);
         }
     }
@@ -108,8 +122,7 @@ class UnitConverter extends AbstractCrudService
     /**
      * Mutate/validate payload before update.
      *
-     * Role: aligns input with update rules for the specific Unit.
-     * Prevents changing the default unit value (value = 1) to a different value.
+     * Prevents changing the base unit's value away from 1.
      *
      * @param Model $model
      * @param array<string,mixed> $data
@@ -126,15 +139,13 @@ class UnitConverter extends AbstractCrudService
             'unit_id' => $unit->id,
         ]);
 
-        if (array_key_exists('value', $data)) {
-            if ($unit->value == 1 && $data['value'] != 1) {
-                throw new UnitTypeCannotChangeDefaultValueException;
-            }
+        if (array_key_exists('value', $data) && (float) $unit->value === 1.0 && (float) $data['value'] !== 1.0) {
+            throw new UnitTypeCannotChangeDefaultValueException;
         }
     }
 
     /**
-     * Hook after create: save translations for the unit.
+     * Hook after create: store translations if provided.
      *
      * @param Model $model
      * @param array<string,mixed> $data
@@ -147,14 +158,7 @@ class UnitConverter extends AbstractCrudService
         /** @var UnitModel $unit */
         $unit = $model;
 
-        if (isset($data['translation'])) {
-            $unit->translate(app()->getLocale(), [
-                'name'        => $data['translation']['name'],
-                'code'        => $data['translation']['code'],
-                'position'    => $data['translation']['position'] ?? 'left',
-                'description' => $data['translation']['description'] ?? null,
-            ]);
-        }
+        $this->syncTranslations($unit, $data['translation'] ?? null, false);
     }
 
     /**
@@ -171,35 +175,19 @@ class UnitConverter extends AbstractCrudService
         /** @var UnitModel $unit */
         $unit = $model;
 
-        if (array_key_exists('translation', $data)) {
-            $translations = [];
-            if (array_key_exists('name', $data['translation'])) {
-                $translations['name'] = $data['translation']['name'];
-            }
-
-            if (array_key_exists('code', $data['translation'])) {
-                $translations['code'] = $data['translation']['code'];
-            }
-
-            if (array_key_exists('position', $data['translation'])) {
-                $translations['position'] = $data['translation']['position'];
-            }
-
-            if (array_key_exists('description', $data['translation'])) {
-                $translations['description'] = $data['translation']['description'];
-            }
-
-            if (! empty($translations)) {
-                $unit->translate(app()->getLocale(), $translations);
-            }
+        if (! array_key_exists('translation', $data)) {
+            return;
         }
+
+        $this->syncTranslations($unit, $data['translation'], true);
     }
 
     /**
      * Hook before delete: validate that unit can be deleted.
      *
-     * Role: prevents deletion of units that are in use or are the default unit
-     * when other units of the same type exist.
+     * Rules:
+     * - A unit that is used in other models (via UnitRelation) cannot be deleted.
+     * - The base unit (value = 1) cannot be deleted if other units of the same type exist.
      *
      * @param Model $model
      *
@@ -211,20 +199,15 @@ class UnitConverter extends AbstractCrudService
         /** @var UnitModel $unit */
         $unit = $model;
 
-        $check_used = $this->hasUsed($unit->id);
+        $this->ensureNotUsed($unit);
 
-        if ($check_used) {
-            $count = UnitRelation::query()->where([
-                'unit_id' => $unit->id,
-            ])->count();
+        if ((float) $unit->value === 1.0) {
+            $hasOtherUnitsInType = UnitModel::query()
+                ->where('type', $unit->type)
+                ->whereKeyNot($unit->getKey())
+                ->exists();
 
-            throw new UnitTypeUsedInException($unit->id, $count);
-        }
-
-        if ($unit->value == 1) {
-            $unit_count = UnitModel::query()->where('type', $unit->type)->count();
-
-            if ($unit_count > 1) {
+            if ($hasOtherUnitsInType) {
                 throw new CannotDeleteDefaultValueException;
             }
         }
@@ -248,29 +231,18 @@ class UnitConverter extends AbstractCrudService
     /**
      * Get the unit model object by ID.
      *
-     * Role: retrieve a unit model instance for direct manipulation.
-     *
      * @param int $unit_id
      *
-     * @return Builder|Model
+     * @return UnitModel
      * @throws Throwable
      */
-    public function getObject(int $unit_id): Builder|Model
+    public function getObject(int $unit_id): UnitModel
     {
-        $unit = UnitModel::query()->where('id', $unit_id)->first();
-
-        if (! $unit) {
-            throw new UnitNotFoundException($unit_id);
-        }
-
-        return $unit;
+        return $this->findUnitOrFail($unit_id);
     }
 
     /**
-     * Get the specified unit with optional relations and locale.
-     *
-     * Role: retrieve a single unit with translations and optional relations.
-     * Returns a Response object with the unit resource.
+     * Get the specified unit with translations and optional relations.
      *
      * @param int $unit_id
      * @param array<int,string> $with
@@ -281,9 +253,7 @@ class UnitConverter extends AbstractCrudService
      */
     public function get(int $unit_id, array $with = [], string $locale = null): Response
     {
-        if (! in_array('translations', $with)) {
-            $with[] = 'translations';
-        }
+        $with = $this->ensureTranslationsRelation($with);
 
         global $translationLocale;
         if (! is_null($locale)) {
@@ -294,7 +264,7 @@ class UnitConverter extends AbstractCrudService
     }
 
     /**
-     * Override show to add translations by default.
+     * Override show to add translations relation by default.
      *
      * @param int $id
      * @param array<int,string> $with
@@ -304,18 +274,14 @@ class UnitConverter extends AbstractCrudService
      */
     protected function show(int $id, array $with = [], ?string $mode = null): Response
     {
-        if (! in_array('translations', $with)) {
-            $with[] = 'translations';
-        }
+        $with = $this->ensureTranslationsRelation($with);
 
         return parent::show($id, $with, $mode);
     }
 
     /**
-     * Change the default unit for a type and recalculate all related units.
-     *
-     * Role: sets a new base unit (value = 1) for a type and adjusts all other
-     * units of the same type proportionally.
+     * Change the base unit for a type (set selected unit to value=1) and
+     * proportionally re-calculate all other unit values in that type.
      *
      * @param int $unit_id
      *
@@ -325,31 +291,22 @@ class UnitConverter extends AbstractCrudService
     public function changeDefaultValue(int $unit_id): Response
     {
         return DB::transaction(function () use ($unit_id) {
-            /** @var UnitModel $unit */
-            $unit = UnitModel::find($unit_id);
+            $unit = $this->findUnitOrFail($unit_id);
 
-            if (! $unit) {
-                throw new UnitNotFoundException($unit_id);
-            }
-
-            if ($unit->value == 0) {
+            if ((float) $unit->value === 0.0) {
                 throw new UnitValueZeroException;
             }
 
-            $check_used = $this->hasUsed($unit->id);
+            $this->ensureNotUsed($unit);
 
-            if ($check_used) {
-                $count = UnitRelation::query()->where([
-                    'unit_id' => $unit->id,
-                ])->count();
+            $pivot = (float) $unit->value;
 
-                throw new UnitTypeUsedInException($unit->id, $count);
-            }
-
-            UnitModel::query()->where('type', $unit->type)->get()->each(function (UnitModel $item) use ($unit) {
-                $item->value = $item->value / $unit->value;
+            UnitModel::query()->where('type', $unit->type)->get()->each(function (UnitModel $item) use ($pivot) {
+                $item->value = (float) $item->value / $pivot;
                 $item->save();
             });
+
+            $unit->refresh();
 
             $this->afterCommon('changeDefaultValue', $unit);
 
@@ -358,10 +315,7 @@ class UnitConverter extends AbstractCrudService
     }
 
     /**
-     * Get list of all places where this unit is used.
-     *
-     * Role: returns all polymorphic relations where this unit is attached
-     * to models (e.g., products, orders, etc.) via the HasUnit trait.
+     * Get all places where this unit is used.
      *
      * @param int $unit_id
      *
@@ -370,26 +324,17 @@ class UnitConverter extends AbstractCrudService
      */
     public function usedIn(int $unit_id): Response
     {
-        /** @var UnitModel $unit */
-        $unit = UnitModel::find($unit_id);
+        $this->findUnitOrFail($unit_id);
 
-        if (! $unit) {
-            throw new UnitNotFoundException($unit_id);
-        }
-
-        $unit_relations = UnitRelation::query()->where([
-            'unit_id' => $unit_id,
-        ])->get();
+        $unitRelations = UnitRelation::query()->where('unit_id', $unit_id)->get();
 
         return Response::make(true, trans('unit::base.messages.used_in', [
-            'count' => $unit_relations->count(),
-        ]), UnitRelationResource::collection($unit_relations));
+            'count' => $unitRelations->count(),
+        ]), UnitRelationResource::collection($unitRelations));
     }
 
     /**
-     * Check if a unit is currently being used in any relation.
-     *
-     * Role: quick check to determine if a unit can be safely deleted.
+     * Check if a unit is used in any relation.
      *
      * @param int $unit_id
      *
@@ -398,51 +343,70 @@ class UnitConverter extends AbstractCrudService
      */
     public function hasUsed(int $unit_id): bool
     {
-        /** @var UnitModel $unit */
-        $unit = UnitModel::find($unit_id);
+        $this->findUnitOrFail($unit_id);
 
-        if (! $unit) {
-            throw new UnitNotFoundException($unit_id);
-        }
-
-        return UnitRelation::query()->where([
-            'unit_id' => $unit_id,
-        ])->exists();
+        return UnitRelation::query()->where('unit_id', $unit_id)->exists();
     }
 
     /**
      * Convert a value from one unit to another.
      *
-     * Role: performs unit conversion between two units of the same type.
-     * Formula: result = input_value * from_unit.value / to_unit.value
+     * Formula: result = input_value * from.value / to.value
      *
-     * @param int $from_unit_id The source unit ID.
-     * @param int $to_unit_id   The target unit ID.
-     * @param float $value      The value to convert.
+     * @param int $from_unit_id
+     * @param int $to_unit_id
+     * @param float $value
      *
-     * @return float The converted value.
+     * @return float
      * @throws Throwable
      */
     public function convert(int $from_unit_id, int $to_unit_id, float $value): float
     {
-        /** @var UnitModel $from_unit */
-        $from_unit = UnitModel::find($from_unit_id);
+        $fromUnit = $this->findUnitOrFail($from_unit_id);
+        $toUnit = $this->findUnitOrFail($to_unit_id);
 
-        if (! $from_unit) {
-            throw new UnitNotFoundException($from_unit_id);
-        }
-
-        /** @var UnitModel $to_unit */
-        $to_unit = UnitModel::find($to_unit_id);
-
-        if (! $to_unit) {
-            throw new UnitNotFoundException($to_unit_id);
-        }
-
-        if ($from_unit->type != $to_unit->type) {
+        if ($fromUnit->type !== $toUnit->type) {
             throw new FromAndToMustSameTypeException;
         }
 
-        return $value * $from_unit->value / $to_unit->value;
+        return $value * (float) $fromUnit->value / (float) $toUnit->value;
+    }
+
+
+    /**
+     * Find a unit or throw a domain exception.
+     *
+     * @param int $unitId
+     *
+     * @return UnitModel
+     * @throws Throwable
+     */
+    protected function findUnitOrFail(int $unitId): UnitModel
+    {
+        /** @var UnitModel|null $unit */
+        $unit = UnitModel::query()->find($unitId);
+
+        if (! $unit) {
+            throw new UnitNotFoundException($unitId);
+        }
+
+        return $unit;
+    }
+
+    /**
+     * Guard: throw UnitTypeUsedInException when unit is used.
+     *
+     * @param UnitModel $unit
+     *
+     * @return void
+     * @throws Throwable
+     */
+    protected function ensureNotUsed(UnitModel $unit): void
+    {
+        $count = UnitRelation::query()->where('unit_id', $unit->id)->count();
+
+        if ($count > 0) {
+            throw new UnitTypeUsedInException($unit->id, $count);
+        }
     }
 }
