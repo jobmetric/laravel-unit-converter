@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 use JobMetric\Media\Contracts\MediaContract;
 use JobMetric\Media\HasFile;
 use JobMetric\PackageCore\Models\HasBooleanStatus;
@@ -31,8 +32,8 @@ use JobMetric\Translation\Models\Translation;
  * @property Carbon $created_at              The timestamp when this unit was created.
  * @property Carbon $updated_at              The timestamp when this unit was last updated.
  *
- * @property-read UnitRelation[] $unitRelations
- * @property-read Translation[] $translations
+ * @property-read Collection|UnitRelation[] $unitRelations
+ * @property-read Collection|Translation[] $translations
  *
  * @method static Builder|Unit ofType(string $type) Filter units by type.
  * @method static Builder|Unit whereType(string $type)

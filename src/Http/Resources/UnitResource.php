@@ -4,18 +4,25 @@ namespace JobMetric\UnitConverter\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
+use JobMetric\Translation\Models\Translation;
 use JobMetric\UnitConverter\Models\UnitRelation;
 
 /**
- * @property mixed id
- * @property mixed type
- * @property mixed value
- * @property mixed status
- * @property mixed created_at
- * @property mixed updated_at
+ * Class UnitResource
  *
- * @property mixed translations
- * @property UnitRelation unitRelations
+ * Transforms the Unit model into a structured JSON resource.
+ *
+ * @property int $id
+ * @property string $type
+ * @property float $value
+ * @property bool $status
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
+ *
+ * @property-read Collection|Translation[] $translations
+ * @property-read Collection|UnitRelation[] $unitRelations
  */
 class UnitResource extends JsonResource
 {
@@ -29,16 +36,17 @@ class UnitResource extends JsonResource
         global $translationLocale;
 
         return [
-            'id' => $this->id,
-            'type' => $this->type,
-            'value' => $this->value,
+            'id'     => $this->id,
+            'type'   => $this->type,
+            'value'  => $this->value,
             'status' => $this->status,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+
+            'created_at' => $this->created_at?->toISOString(),
+            'updated_at' => $this->updated_at?->toISOString(),
 
             'translations' => translationResourceData($this->translations, $translationLocale),
 
-            'unitRelations' => $this->whenLoaded('unitRelations', function () {
+            'unit_relations' => $this->whenLoaded('unitRelations', function () {
                 return UnitRelationResource::collection($this->unitRelations);
             }),
         ];

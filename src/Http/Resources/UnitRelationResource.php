@@ -2,21 +2,27 @@
 
 namespace JobMetric\UnitConverter\Http\Resources;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Carbon;
 use JobMetric\UnitConverter\Models\Unit;
 
 /**
- * @property mixed unit_id
- * @property mixed unitable_id
- * @property mixed unitable_type
- * @property mixed type
- * @property mixed value
- * @property mixed created_at
+ * Class UnitRelationResource
  *
- * @property Unit unit
- * @property mixed unitable
- * @property mixed unitable_resource
+ * Transforms the UnitRelation model into a structured JSON resource.
+ *
+ * @property int $unit_id
+ * @property string $unitable_type
+ * @property int $unitable_id
+ * @property string $type
+ * @property float $value
+ * @property Carbon $created_at
+ *
+ * @property-read Unit $unit
+ * @property-read Model $unitable
+ * @property-read mixed $unitable_resource
  */
 class UnitRelationResource extends JsonResource
 {
@@ -28,18 +34,18 @@ class UnitRelationResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'unit_id' => $this->unit_id,
-            'unitable_id' => $this->unitable_id,
+            'unit_id'       => $this->unit_id,
+            'unitable_id'   => $this->unitable_id,
             'unitable_type' => $this->unitable_type,
-            'type' => $this->type,
-            'value' => $this->value,
-            'created_at' => $this->created_at,
+            'type'          => $this->type,
+            'value'         => $this->value,
+            'created_at'    => $this->created_at?->toISOString(),
 
             'unit' => $this->whenLoaded('unit', function () {
-                return new UnitResource($this->unit);
+                return UnitResource::make($this->unit);
             }),
 
-            'unitable' => $this?->unitable_resource
+            'unitable' => $this?->unitable_resource,
         ];
     }
 }
