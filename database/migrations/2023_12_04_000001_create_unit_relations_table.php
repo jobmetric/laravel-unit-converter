@@ -11,8 +11,8 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create(config('unit.tables.unit_relation'), function (Blueprint $table) {
-            $table->foreignId('unit_id')->index()->constrained(config('unit.tables.unit'))->cascadeOnUpdate()->cascadeOnDelete();
+        Schema::create(config('unit-converter.tables.unit_relation'), function (Blueprint $table) {
+            $table->foreignId('unit_id')->index()->constrained(config('unit-converter.tables.unit'))->cascadeOnUpdate()->cascadeOnDelete();
             /**
              * reference to unit in units table
              *
@@ -87,6 +87,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists(config('unit.tables.unit_relation'));
+        Schema::dropIfExists(config('unit-converter.tables.unit_relation'));
     }
 };

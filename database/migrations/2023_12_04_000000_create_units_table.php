@@ -11,7 +11,7 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create(config('unit.tables.unit'), function (Blueprint $table) {
+        Schema::create(config('unit-converter.tables.unit'), function (Blueprint $table) {
             $table->id();
 
             $table->string('type')->index();
@@ -61,6 +61,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists(config('unit.tables.unit'));
+        Schema::dropIfExists(config('unit-converter.tables.unit'));
     }
 };

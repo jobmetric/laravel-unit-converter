@@ -73,7 +73,7 @@ class Unit extends Model implements MediaContract
      */
     public function getTable(): string
     {
-        return config('unit.tables.unit', parent::getTable());
+        return config('unit-converter.tables.unit', parent::getTable());
     }
 
     /**
@@ -126,8 +126,8 @@ class Unit extends Model implements MediaContract
                 'media_collection' => 'public',
                 'size'             => [
                     'default' => [
-                        'w' => config('unit.default_image_size.width'),
-                        'h' => config('unit.default_image_size.height'),
+                        'w' => config('unit-converter.default_image_size.width'),
+                        'h' => config('unit-converter.default_image_size.height'),
                     ],
                 ],
             ],

@@ -84,7 +84,7 @@ class UnitRelation extends Pivot
      */
     public function getTable(): string
     {
-        return config('unit.tables.unit_relation', parent::getTable());
+        return config('unit-converter.tables.unit_relation', parent::getTable());
     }
 
     /**

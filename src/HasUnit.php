@@ -193,7 +193,7 @@ trait HasUnit
      */
     public function units(): MorphToMany
     {
-        return $this->morphToMany(Unit::class, 'unitable', config('unit.tables.unit_relation'))->withPivot([
+        return $this->morphToMany(Unit::class, 'unitable', config('unit-converter.tables.unit_relation'))->withPivot([
                 'type',
                 'value',
             ])->withTimestamps(['created_at']);
