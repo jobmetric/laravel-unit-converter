@@ -14,7 +14,8 @@ class UnitListCommand extends Command
     use ConsoleTools;
 
     protected $signature = 'unit:list
-        {--type= : Filter units by type (e.g., weight, length, volume)}';
+        {--type= : Filter units by type (e.g., weight, length, volume)}
+        {--locale= : Display translations in specified locale (e.g., en, fa)}';
 
     protected $description = 'List all available units';
 
@@ -24,6 +25,7 @@ class UnitListCommand extends Command
     public function handle(): int
     {
         $type = $this->option('type');
+        $locale = $this->option('locale') ?: app()->getLocale();
 
         if ($type && ! $this->isValidType($type)) {
             $this->message("Invalid unit type: {$type}. Available types: " . implode(', ', UnitTypeEnum::values()), 'error');
@@ -39,7 +41,7 @@ class UnitListCommand extends Command
             return self::SUCCESS;
         }
 
-        $this->displayUnits($units);
+        $this->displayUnits($units, $locale);
 
         return self::SUCCESS;
     }
@@ -69,13 +71,12 @@ class UnitListCommand extends Command
     /**
      * Display the units in a formatted output.
      */
-    private function displayUnits(Collection $units): void
+    private function displayUnits(Collection $units, string $locale): void
     {
         $this->newLine();
-        $this->line('  <fg=cyan;options=bold>Available Units:</>');
+        $this->line('  <fg=cyan;options=bold>Available Units:</> <fg=gray>(locale: ' . $locale . ')</>');
         $this->newLine();
 
-        $locale = app()->getLocale();
         $currentType = null;
 
         foreach ($units as $unit) {
@@ -106,12 +107,13 @@ class UnitListCommand extends Command
      */
     private function displayUnitRow(Unit $unit, string $locale): void
     {
-        $translation = $unit->translations->firstWhere('locale', $locale);
-        $name = $translation?->name ?? 'N/A';
-        $code = $translation?->code ?? 'N/A';
+        // Get translation fields for the current locale
+        $translations = $unit->translations->where('locale', $locale)->pluck('value', 'field');
+
+        $name = $translations->get('name', 'N/A');
+        $code = $translations->get('code', 'N/A');
         $status = $unit->status ? '<fg=green>✓</>' : '<fg=red>✗</>';
 
         $this->line("    {$status} <fg=yellow>{$code}</> - <fg=white>{$name}</> (value: <fg=cyan>{$unit->value}</>)");
     }
 }
-
