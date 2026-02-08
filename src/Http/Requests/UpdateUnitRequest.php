@@ -71,12 +71,12 @@ class UpdateUnitRequest extends FormRequest
                         $name = trim((string) $value);
 
                         if ($name === '') {
-                            $fail(trans('unit::base.validation.unit.translation_name_required'));
+                            $fail(trans('unit-converter::base.validation.unit.translation_name_required'));
 
                             return;
                         }
 
-                        $rule = new TranslationFieldExistRule(UnitModel::class, 'name', $locale, $unitId, -1, [], 'unit::base.fields.name');
+                        $rule = new TranslationFieldExistRule(UnitModel::class, 'name', $locale, $unitId, -1, [], 'unit-converter::base.fields.name');
 
                         if (! $rule->passes($attribute, $name)) {
                             $fail($rule->message());
@@ -159,9 +159,9 @@ class UpdateUnitRequest extends FormRequest
 
                 if ($exists) {
                     $v->errors()
-                        ->add("translation.$locale.name", trans('unit::base.validation.unit.name_duplicate_in_type', [
+                        ->add("translation.$locale.name", trans('unit-converter::base.validation.unit.name_duplicate_in_type', [
                             'name' => $name,
-                            'type' => trans('unit::base.fields.' . $type),
+                            'type' => trans('unit-converter::base.unit_types.' . $type),
                         ]));
                 }
             }
@@ -176,14 +176,14 @@ class UpdateUnitRequest extends FormRequest
     public function attributes(): array
     {
         return [
-            'translation'               => trans('unit::base.fields.translation'),
-            'translation.*.name'        => trans('unit::base.fields.name'),
-            'translation.*.code'        => trans('unit::base.fields.code'),
-            'translation.*.position'    => trans('unit::base.fields.position'),
-            'translation.*.description' => trans('unit::base.fields.description'),
+            'translation'               => trans('unit-converter::base.fields.translation'),
+            'translation.*.name'        => trans('unit-converter::base.fields.name'),
+            'translation.*.code'        => trans('unit-converter::base.fields.code'),
+            'translation.*.position'    => trans('unit-converter::base.fields.position'),
+            'translation.*.description' => trans('unit-converter::base.fields.description'),
 
-            'value'  => trans('unit::base.fields.value'),
-            'status' => trans('unit::base.fields.status'),
+            'value'  => trans('unit-converter::base.fields.value'),
+            'status' => trans('unit-converter::base.fields.status'),
         ];
     }
 

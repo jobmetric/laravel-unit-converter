@@ -9,6 +9,6 @@ class CannotDeleteDefaultValueException extends Exception
 {
     public function __construct(int $code = 400, ?Throwable $previous = null)
     {
-        parent::__construct(trans('unit::base.exceptions.cannot_delete_default_value'), $code, $previous);
+        parent::__construct(trans('unit-converter::base.exceptions.cannot_delete_default_value'), $code, $previous);
     }
 }

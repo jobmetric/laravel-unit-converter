@@ -34,7 +34,7 @@ readonly class UnitStoreEvent implements DomainEvent
      */
     public static function definition(): DomainEventDefinition
     {
-        return new DomainEventDefinition(self::key(), 'unit::base.events.unit_stored.group', 'unit::base.events.unit_stored.title', 'unit::base.events.unit_stored.description', 'fas fa-save', [
+        return new DomainEventDefinition(self::key(), 'unit-converter::base.entity_names.unit', 'unit-converter::base.events.unit_stored.title', 'unit-converter::base.events.unit_stored.description', 'fas fa-save', [
             'unit',
             'storage',
             'management',

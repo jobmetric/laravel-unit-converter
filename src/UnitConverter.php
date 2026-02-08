@@ -45,7 +45,7 @@ class UnitConverter extends AbstractCrudService
      *
      * @var string
      */
-    protected string $entityName = 'unit::base.entity_names.unit';
+    protected string $entityName = 'unit-converter::base.entity_names.unit';
 
 
     /**
@@ -310,7 +310,7 @@ class UnitConverter extends AbstractCrudService
 
             $this->afterCommon('changeDefaultValue', $unit);
 
-            return Response::make(true, trans('unit::base.messages.change_default_value'), UnitResource::make($unit));
+            return Response::make(true, trans('unit-converter::base.messages.change_default_value'), UnitResource::make($unit));
         });
     }
 
@@ -328,7 +328,7 @@ class UnitConverter extends AbstractCrudService
 
         $unitRelations = UnitRelation::query()->where('unit_id', $unit_id)->get();
 
-        return Response::make(true, trans('unit::base.messages.used_in', [
+        return Response::make(true, trans('unit-converter::base.messages.used_in', [
             'count' => $unitRelations->count(),
         ]), UnitRelationResource::collection($unitRelations));
     }

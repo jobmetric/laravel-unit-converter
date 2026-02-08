@@ -33,7 +33,7 @@ readonly class UnitDeleteEvent implements DomainEvent
      */
     public static function definition(): DomainEventDefinition
     {
-        return new DomainEventDefinition(self::key(), 'unit::base.events.unit_deleted.group', 'unit::base.events.unit_deleted.title', 'unit::base.events.unit_deleted.description', 'fas fa-trash-alt', [
+        return new DomainEventDefinition(self::key(), 'unit-converter::base.entity_names.unit', 'unit-converter::base.events.unit_deleted.title', 'unit-converter::base.events.unit_deleted.description', 'fas fa-trash-alt', [
             'unit',
             'storage',
             'management',

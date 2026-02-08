@@ -34,7 +34,7 @@ readonly class UnitUpdateEvent implements DomainEvent
      */
     public static function definition(): DomainEventDefinition
     {
-        return new DomainEventDefinition(self::key(), 'unit::base.events.unit_updated.group', 'unit::base.events.unit_updated.title', 'unit::base.events.unit_updated.description', 'fas fa-edit', [
+        return new DomainEventDefinition(self::key(), 'unit-converter::base.entity_names.unit', 'unit-converter::base.events.unit_updated.title', 'unit-converter::base.events.unit_updated.description', 'fas fa-edit', [
             'unit',
             'storage',
             'management',

@@ -45,12 +45,12 @@ class StoreUnitRequest extends FormRequest
                     $name = trim((string) $value);
 
                     if ($name === '') {
-                        $fail(trans('unit::base.validation.unit.translation_name_required'));
+                        $fail(trans('unit-converter::base.validation.unit.translation_name_required'));
 
                         return;
                     }
 
-                    $rule = new TranslationFieldExistRule(UnitModel::class, 'name', $locale, null, -1, [], 'unit::base.fields.name');
+                    $rule = new TranslationFieldExistRule(UnitModel::class, 'name', $locale, null, -1, [], 'unit-converter::base.fields.name');
 
                     if (! $rule->passes($attribute, $name)) {
                         $fail($rule->message());
@@ -96,18 +96,18 @@ class StoreUnitRequest extends FormRequest
                 }
 
                 $exists = UnitModel::query()->where('type', $type)->whereHas('translations', function ($query) use (
-                        $locale,
-                        $name
-                    ) {
-                        $query->where('locale', $locale)->where('field', 'name')->where('value', $name);
-                    })->exists();
+                    $locale,
+                    $name
+                ) {
+                    $query->where('locale', $locale)->where('field', 'name')->where('value', $name);
+                })->exists();
 
                 if ($exists) {
                     $v->errors()
-                        ->add("translation.$locale.name", trans('unit::base.validation.unit.name_duplicate_in_type', [
-                                'name' => $name,
-                                'type' => trans('unit::base.fields.' . $type),
-                            ]));
+                        ->add("translation.$locale.name", trans('unit-converter::base.validation.unit.name_duplicate_in_type', [
+                            'name' => $name,
+                            'type' => trans('unit-converter::base.unit_types.' . $type),
+                        ]));
                 }
             }
         });
@@ -121,15 +121,15 @@ class StoreUnitRequest extends FormRequest
     public function attributes(): array
     {
         return [
-            'translation'               => trans('unit::base.fields.translation'),
-            'translation.*.name'        => trans('unit::base.fields.name'),
-            'translation.*.code'        => trans('unit::base.fields.code'),
-            'translation.*.position'    => trans('unit::base.fields.position'),
-            'translation.*.description' => trans('unit::base.fields.description'),
+            'translation'               => trans('unit-converter::base.fields.translation'),
+            'translation.*.name'        => trans('unit-converter::base.fields.name'),
+            'translation.*.code'        => trans('unit-converter::base.fields.code'),
+            'translation.*.position'    => trans('unit-converter::base.fields.position'),
+            'translation.*.description' => trans('unit-converter::base.fields.description'),
 
-            'type'   => trans('unit::base.fields.type'),
-            'value'  => trans('unit::base.fields.value'),
-            'status' => trans('unit::base.fields.status'),
+            'type'   => trans('unit-converter::base.fields.type'),
+            'value'  => trans('unit-converter::base.fields.value'),
+            'status' => trans('unit-converter::base.fields.status'),
         ];
     }
 

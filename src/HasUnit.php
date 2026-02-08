@@ -252,7 +252,7 @@ trait HasUnit
 
         return [
             'ok'      => true,
-            'message' => trans('unit::base.messages.attached'),
+            'message' => trans('unit-converter::base.messages.attached'),
             'data'    => UnitResource::make($unit),
             'status'  => 200,
         ];
@@ -276,7 +276,7 @@ trait HasUnit
 
                 return [
                     'ok'      => true,
-                    'message' => trans('unit::base.messages.detached'),
+                    'message' => trans('unit-converter::base.messages.detached'),
                     'data'    => $data,
                     'status'  => 200,
                 ];
@@ -303,7 +303,7 @@ trait HasUnit
         if (! $relation) {
             return [
                 'ok'      => true,
-                'message' => trans('unit::base.messages.detached'),
+                'message' => trans('unit-converter::base.messages.detached'),
                 'data'    => null,
                 'status'  => 200,
             ];
@@ -320,7 +320,7 @@ trait HasUnit
 
         return [
             'ok'      => true,
-            'message' => trans('unit::base.messages.detached'),
+            'message' => trans('unit-converter::base.messages.detached'),
             'data'    => $data,
             'status'  => 200,
         ];

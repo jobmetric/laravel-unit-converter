@@ -9,6 +9,6 @@ class UnitTypeCannotChangeDefaultValueException extends Exception
 {
     public function __construct(int $code = 400, ?Throwable $previous = null)
     {
-        parent::__construct(trans('unit::base.exceptions.unit_type_cannot_change_default_value'), $code, $previous);
+        parent::__construct(trans('unit-converter::base.exceptions.unit_type_cannot_change_default_value'), $code, $previous);
     }
 }

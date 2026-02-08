@@ -82,4 +82,14 @@ enum UnitTypeEnum: string
     case VISCOSITY = "viscosity";                                           /* Viscosity units (poise, stokes) */
     case CONCENTRATION = "concentration";                                   /* Concentration units (mol/L, ppm) */
     case COOKING = "cooking";                                               /* Cooking units (cup, tablespoon, teaspoon) */
+
+    /**
+     * Get the translated label for the unit type.
+     *
+     * @return string
+     */
+    public function label(): string
+    {
+        return trans('unit-converter::base.unit_types.' . $this->value);
+    }
 }
