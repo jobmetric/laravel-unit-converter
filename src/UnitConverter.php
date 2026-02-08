@@ -374,6 +374,18 @@ class UnitConverter extends AbstractCrudService
 
 
     /**
+     * Find a unit by code (from translations).
+     *
+     * @param string $code
+     *
+     * @return UnitModel|null
+     */
+    public function findUnitByCode(string $code): ?UnitModel
+    {
+        return UnitModel::whereTranslationField('code', $code)->first();
+    }
+
+    /**
      * Find a unit or throw a domain exception.
      *
      * @param int $unitId

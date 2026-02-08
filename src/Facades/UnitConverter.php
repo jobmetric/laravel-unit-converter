@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static \JobMetric\PackageCore\Output\Response changeDefaultValue(int $unit_id)
  * @method static \JobMetric\PackageCore\Output\Response usedIn(int $unit_id)
  * @method static bool hasUsed(int $unit_id)
+ * @method static \JobMetric\UnitConverter\Models\Unit|null findUnitByCode(string $code)
  * @method static float convert(int $from_unit_id, int $to_unit_id, float $value)
  */
 class UnitConverter extends Facade

@@ -26,7 +26,7 @@
         "php": ">=8.0.1",
         "laravel/framework": ">=9.19",
         "jobmetric/laravel-package-core": "^1.37",
-        "jobmetric/laravel-translation": "^3.7",
+        "jobmetric/laravel-translation": "^3.8",
         "jobmetric/laravel-event-system": "^2.8",
         "jobmetric/media": "^1.0"
     },
