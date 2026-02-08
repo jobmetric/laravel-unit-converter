@@ -19,6 +19,51 @@ use JobMetric\UnitConverter\Models\Unit as UnitModel;
 class StoreUnitRequest extends FormRequest
 {
     /**
+     * Normalize input data before validation.
+     *
+     * If translations are missing for some active locales, it copies
+     * from the fallback locale (en) or the first available locale.
+     *
+     * @param array<string, mixed> $data
+     * @param array<string, mixed> $context
+     *
+     * @return array<string, mixed>
+     */
+    public static function normalize(array $data, array $context = []): array
+    {
+        if (!isset($data['translation']) || !is_array($data['translation'])) {
+            return $data;
+        }
+
+        $translation = $data['translation'];
+        $locales = Language::getActiveLocales();
+
+        // Determine fallback locale (prefer 'en', otherwise use first available)
+        $fallbackLocale = 'en';
+        if (!isset($translation[$fallbackLocale])) {
+            $fallbackLocale = array_key_first($translation);
+        }
+
+        // If no fallback found, return as is
+        if ($fallbackLocale === null || !isset($translation[$fallbackLocale])) {
+            return $data;
+        }
+
+        $fallbackData = $translation[$fallbackLocale];
+
+        // Fill missing locales with fallback data
+        foreach ($locales as $locale) {
+            if (!isset($translation[$locale])) {
+                $translation[$locale] = $fallbackData;
+            }
+        }
+
+        $data['translation'] = $translation;
+
+        return $data;
+    }
+
+    /**
      * Build validation rules dynamically for active locales and scalar fields.
      *
      * @return array<string, mixed>
