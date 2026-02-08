@@ -2,10 +2,12 @@
 
 namespace JobMetric\UnitConverter;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Collection;
 use JobMetric\UnitConverter\Exceptions\TypeNotFoundInAllowTypesException;
 use JobMetric\UnitConverter\Exceptions\UnitNotFoundException;
 use JobMetric\UnitConverter\Facades\UnitConverter as UnitConverterFacades;
@@ -43,8 +45,11 @@ use Throwable;
  * - The "type" column is treated as a unit key (e.g. weight/width/height).
  * - The actual unit type remains available on the related Unit model via $unit->type.
  *
- * @property Unit[] units
+ * @property-read Collection<int, Unit> $units
+ * @property-read Collection<int, UnitRelation> $unitRelations
  *
+ * @method static Builder|static hasUnitKey(string $key)
+ * @method static Builder|static whereUnitEquals(string $key, int $unitId, ?float $value = null)
  * @method morphToMany(string $class, string $string, string $string1)
  */
 trait HasUnit
@@ -100,6 +105,7 @@ trait HasUnit
      */
     public static function bootHasUnit(): void
     {
+        // Intercept the virtual "unit" attribute
         static::saving(function (Model $model) {
             if (! isset($model->attributes['unit']) || ! is_array($model->attributes['unit'])) {
                 return;
@@ -124,7 +130,6 @@ trait HasUnit
                 }
 
                 $unitId = (int) $row['unit_id'];
-                $value = $row['value'];
 
                 if ($unitId > 0) {
                     /** @var Unit|null $unit */
@@ -141,6 +146,7 @@ trait HasUnit
             unset($model->attributes['unit']);
         });
 
+        // Flush buffered units after save
         static::saved(function (Model $model) {
             if (empty($model->innerUnits)) {
                 return;
@@ -155,7 +161,7 @@ trait HasUnit
                     continue;
                 }
 
-                $model->attachUnit((int) $row['unit_id'], $key, (float) $row['value']);
+                $model->storeUnit($key, (int) $row['unit_id'], (float) $row['value']);
             }
 
             $model->innerUnits = [];
@@ -188,9 +194,9 @@ trait HasUnit
     public function units(): MorphToMany
     {
         return $this->morphToMany(Unit::class, 'unitable', config('unit.tables.unit_relation'))->withPivot([
-            'type',
-            'value',
-        ])->withTimestamps(['created_at']);
+                'type',
+                'value',
+            ])->withTimestamps(['created_at']);
     }
 
     /**
@@ -216,9 +222,240 @@ trait HasUnit
     }
 
     /**
-     * Attach (upsert) a unit to a model by key.
+     * Query scope: filter models that have a specific unit key.
      *
-     * NOTE: $type parameter is treated as a "unit key" (pivot.type).
+     * @param Builder $query
+     * @param string $key
+     *
+     * @return Builder
+     */
+    public function scopeHasUnitKey(Builder $query, string $key): Builder
+    {
+        return $query->whereHas('unitRelations', function (Builder $q) use ($key) {
+            $q->where('type', $key);
+        });
+    }
+
+    /**
+     * Query scope: filter models by unit key and unit_id (optionally value).
+     *
+     * @param Builder $query
+     * @param string $key
+     * @param int $unitId
+     * @param float|null $value
+     *
+     * @return Builder
+     */
+    public function scopeWhereUnitEquals(Builder $query, string $key, int $unitId, ?float $value = null): Builder
+    {
+        return $query->whereHas('unitRelations', function (Builder $q) use ($key, $unitId, $value) {
+            $q->where('type', $key)->where('unit_id', $unitId);
+
+            if ($value !== null) {
+                $q->where('value', $value);
+            }
+        });
+    }
+
+    /**
+     * Store (upsert) a unit by key.
+     *
+     * @param string $key unit key (e.g. weight, width, height)
+     * @param int $unitId
+     * @param float $value
+     *
+     * @return static
+     * @throws Throwable
+     */
+    public function storeUnit(string $key, int $unitId, float $value): static
+    {
+        /** @var Unit|null $unit */
+        $unit = Unit::find($unitId);
+
+        if (! $unit) {
+            throw new UnitNotFoundException($unitId);
+        }
+
+        $this->assertUnitKeyAllowed($key);
+        $this->assertUnitMatchesKeyType($key, $unit);
+
+        UnitRelation::query()->updateOrInsert([
+            'unitable_id'   => $this->id,
+            'unitable_type' => get_class($this),
+            'type'          => $key,
+        ], [
+            'unit_id'    => $unitId,
+            'value'      => $value,
+            'created_at' => now(),
+        ]);
+
+        return $this;
+    }
+
+    /**
+     * Store multiple units in a batch.
+     *
+     * @param array<string, array{unit_id: int, value: float}> $units
+     *
+     * @return static
+     * @throws Throwable
+     */
+    public function storeUnitBatch(array $units): static
+    {
+        foreach ($units as $key => $data) {
+            if (! is_array($data) || ! isset($data['unit_id'], $data['value'])) {
+                continue;
+            }
+
+            $this->storeUnit($key, (int) $data['unit_id'], (float) $data['value']);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Get a single unit value by key (optionally convert to another unit).
+     *
+     * @param string $key
+     * @param int|null $convertUnitId
+     *
+     * @return array{unit: Unit|null, value: float|null, translation: array|null}
+     * @throws Throwable
+     */
+    public function getUnit(string $key, ?int $convertUnitId = null): array
+    {
+        $this->assertUnitKeyAllowed($key);
+
+        /** @var UnitRelation|null $relation */
+        $relation = $this->unitRelation($key)->first();
+
+        if (! $relation) {
+            return [
+                'unit'        => null,
+                'value'       => null,
+                'translation' => null,
+            ];
+        }
+
+        /** @var Unit|null $unit */
+        $unit = Unit::with('translations')->find($relation->unit_id);
+
+        if (! $unit) {
+            throw new UnitNotFoundException($relation->unit_id);
+        }
+
+        $translation = $this->getUnitTranslationData($unit);
+
+        // If no conversion requested, return original
+        if ($convertUnitId === null) {
+            return [
+                'unit'        => $unit,
+                'value'       => $relation->value,
+                'translation' => $translation,
+            ];
+        }
+
+        /** @var Unit|null $convertUnit */
+        $convertUnit = Unit::with('translations')->find($convertUnitId);
+
+        if (! $convertUnit) {
+            throw new UnitNotFoundException($convertUnitId);
+        }
+
+        $this->assertUnitMatchesKeyType($key, $convertUnit);
+
+        $convertTranslation = $this->getUnitTranslationData($convertUnit);
+
+        return [
+            'unit'        => $convertUnit,
+            'value'       => UnitConverterFacades::convert($relation->unit_id, $convertUnitId, $relation->value),
+            'translation' => $convertTranslation,
+        ];
+    }
+
+    /**
+     * Get all units for this model.
+     *
+     * @return Collection<string, array{unit: Unit, value: float, translation: array|null}>
+     */
+    public function getUnits(): Collection
+    {
+        $relations = $this->unitRelations()->with('unit.translations')->get();
+
+        return $relations->mapWithKeys(function (UnitRelation $relation) {
+            $unit = $relation->unit;
+            $translation = $this->getUnitTranslationData($unit);
+
+            return [
+                $relation->type => [
+                    'unit'        => $unit,
+                    'value'       => $relation->value,
+                    'translation' => $translation,
+                ],
+            ];
+        });
+    }
+
+    /**
+     * Get all units as key-value pairs (key => value).
+     *
+     * @return Collection<string, float>
+     */
+    public function getUnitValues(): Collection
+    {
+        return $this->unitRelations()->pluck('value', 'type');
+    }
+
+    /**
+     * Check if the model has a specific unit key.
+     *
+     * @param string $key
+     *
+     * @return bool
+     */
+    public function hasUnit(string $key): bool
+    {
+        return $this->unitRelation($key)->exists();
+    }
+
+    /**
+     * Forget (delete) a unit by key.
+     *
+     * @param string $key
+     *
+     * @return static
+     * @throws Throwable
+     */
+    public function forgetUnit(string $key): static
+    {
+        $this->assertUnitKeyAllowed($key);
+
+        $this->unitRelation($key)->delete();
+
+        return $this;
+    }
+
+    /**
+     * Forget all units, optionally for a specific key.
+     *
+     * @param string|null $key
+     *
+     * @return static
+     * @throws Throwable
+     */
+    public function forgetUnits(?string $key = null): static
+    {
+        if ($key !== null) {
+            return $this->forgetUnit($key);
+        }
+
+        $this->unitRelations()->delete();
+
+        return $this;
+    }
+
+    /**
+     * Attach (upsert) a unit to a model by key.
      *
      * @param int $unit_id
      * @param string $type unit key (e.g. weight, width, height)
@@ -226,29 +463,18 @@ trait HasUnit
      *
      * @return array
      * @throws Throwable
+     * @deprecated Use storeUnit() instead
      */
     public function attachUnit(int $unit_id, string $type, float $value): array
     {
-        /**
-         * @var Unit $unit
-         */
+        /** @var Unit|null $unit */
         $unit = Unit::find($unit_id);
 
         if (! $unit) {
             throw new UnitNotFoundException($unit_id);
         }
 
-        $this->assertUnitKeyAllowed($type);
-        $this->assertUnitMatchesKeyType($type, $unit);
-
-        UnitRelation::query()->updateOrInsert([
-            'unitable_id'   => $this->id,
-            'unitable_type' => get_class($this),
-            'type'          => $type,
-        ], [
-            'unit_id' => $unit_id,
-            'value'   => $value,
-        ]);
+        $this->storeUnit($type, $unit_id, $value);
 
         return [
             'ok'      => true,
@@ -259,12 +485,13 @@ trait HasUnit
     }
 
     /**
-     * detach unit
+     * Detach unit by unit_id.
      *
      * @param int $unit_id
      *
      * @return array
      * @throws Throwable
+     * @deprecated Use forgetUnit() with key instead
      */
     public function detachUnit(int $unit_id): array
     {
@@ -293,6 +520,7 @@ trait HasUnit
      *
      * @return array
      * @throws Throwable
+     * @deprecated Use forgetUnit() instead
      */
     public function detachUnitKey(string $key): array
     {
@@ -300,6 +528,7 @@ trait HasUnit
 
         /** @var UnitRelation|null $relation */
         $relation = $this->unitRelation($key)->first();
+
         if (! $relation) {
             return [
                 'ok'      => true,
@@ -312,11 +541,7 @@ trait HasUnit
         $unit = Unit::find($relation->unit_id);
         $data = $unit ? UnitResource::make($unit) : null;
 
-        UnitRelation::query()->where([
-            'unitable_id'   => $this->id,
-            'unitable_type' => get_class($this),
-            'type'          => $key,
-        ])->delete();
+        $this->forgetUnit($key);
 
         return [
             'ok'      => true,
@@ -332,6 +557,7 @@ trait HasUnit
      * @param string $type
      *
      * @return MorphToMany
+     * @deprecated Use getUnit() instead
      */
     public function getUnitByType(string $type): MorphToMany
     {
@@ -346,61 +572,15 @@ trait HasUnit
      *
      * @return array
      * @throws Throwable
+     * @deprecated Use getUnit() instead
      */
-    public function getUnitValueByType(string $type, int $convert_unit_id = null): array
+    public function getUnitValueByType(string $type, ?int $convert_unit_id = null): array
     {
-        $this->assertUnitKeyAllowed($type);
-
-        /**
-         * @var Unit $convert_unit
-         */
-        $convert_unit = null;
-
-        if ($convert_unit_id) {
-            $convert_unit = Unit::query()->where('id', $convert_unit_id)->first();
-
-            if (! $convert_unit) {
-                throw new UnitNotFoundException($convert_unit_id);
-            }
-
-            $convert_unit->withTranslations(app()->getLocale());
-        }
-
-        /**
-         * @var UnitRelation $unit_relation
-         */
-        $unit_relation = UnitRelation::query()
-            ->where('unitable_id', $this->id)
-            ->where('unitable_type', get_class($this))
-            ->where('type', $type)
-            ->first();
-
-        if (! $unit_relation) {
-            return [
-                'translation' => null,
-                'value'       => null,
-            ];
-        }
-
-        if (! $convert_unit_id) {
-            $convert_unit = Unit::query()->where('id', $unit_relation->unit_id)->first();
-
-            if (! $convert_unit) {
-                throw new UnitNotFoundException($unit_relation->unit_id);
-            }
-
-            $convert_unit->withTranslations(app()->getLocale());
-        }
-
-        $this->assertUnitMatchesKeyType($type, $convert_unit);
-
-        $translation = translationResourceData($convert_unit->translations);
-
-        $value = $unit_relation->value;
+        $result = $this->getUnit($type, $convert_unit_id);
 
         return [
-            'translation' => $translation[app()->getLocale()],
-            'value'       => UnitConverterFacades::convert($unit_relation->unit_id, $convert_unit->id, $value),
+            'translation' => $result['translation'],
+            'value'       => $result['value'],
         ];
     }
 
@@ -432,6 +612,51 @@ trait HasUnit
         $unitables = $this->getUnitables();
 
         return in_array('*', $unitables, true);
+    }
+
+    /**
+     * Merge keys into whitelist. Removes '*' if present to narrow scope.
+     *
+     * @param array<string, string>|array<int, string> $keys
+     *
+     * @return void
+     */
+    public function mergeUnitables(array $keys): void
+    {
+        if ($this->unitablesAllowAll()) {
+            $this->baseUnitables = [];
+        }
+
+        $normalized = $this->normalizeUnitables($keys);
+
+        // Remove '*' from normalized if present
+        if (in_array('*', $normalized, true)) {
+            return;
+        }
+
+        $this->baseUnitables = array_merge($this->baseUnitables, $normalized);
+
+        if (empty($this->baseUnitables)) {
+            $this->baseUnitables = ['*'];
+        }
+    }
+
+    /**
+     * Remove a key from the whitelist. If becomes empty, reverts to ['*'].
+     *
+     * @param string $key
+     *
+     * @return void
+     */
+    public function removeUnitable(string $key): void
+    {
+        if (array_key_exists($key, $this->baseUnitables)) {
+            unset($this->baseUnitables[$key]);
+        }
+
+        if (empty($this->baseUnitables)) {
+            $this->baseUnitables = ['*'];
+        }
     }
 
     /**
@@ -546,5 +771,39 @@ trait HasUnit
             // Reuse existing exception class for a clear 400 response.
             throw new TypeNotFoundInAllowTypesException($unit->type);
         }
+    }
+
+    /**
+     * Get translation data for a unit in the current locale.
+     *
+     * @param Unit $unit
+     * @param string|null $locale
+     *
+     * @return array|null
+     */
+    protected function getUnitTranslationData(Unit $unit, ?string $locale = null): ?array
+    {
+        $locale = $locale ?? app()->getLocale();
+
+        // Use translationResourceData helper if available
+        if (function_exists('translationResourceData')) {
+            $data = translationResourceData($unit->translations, $locale);
+
+            return $data[$locale] ?? null;
+        }
+
+        // Fallback: manually build translation data
+        $translations = $unit->translations->where('locale', $locale);
+
+        if ($translations->isEmpty()) {
+            return null;
+        }
+
+        $result = [];
+        foreach ($translations as $translation) {
+            $result[$translation->field] = $translation->value;
+        }
+
+        return $result;
     }
 }
