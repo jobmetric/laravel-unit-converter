@@ -8,8 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
-use JobMetric\Media\Contracts\MediaContract;
-use JobMetric\Media\HasFile;
 use JobMetric\PackageCore\Models\HasBooleanStatus;
 use JobMetric\Translation\HasTranslation;
 use JobMetric\Translation\Models\Translation;
@@ -40,9 +38,9 @@ use JobMetric\Translation\Models\Translation;
  * @method static Builder|Unit whereValue(float $value)
  * @method static Builder|Unit whereStatus(bool $status)
  */
-class Unit extends Model implements MediaContract
+class Unit extends Model
 {
-    use HasFactory, HasBooleanStatus, HasTranslation, HasFile;
+    use HasFactory, HasBooleanStatus, HasTranslation;
 
     /**
      * The attributes that are mass assignable.
@@ -112,25 +110,5 @@ class Unit extends Model implements MediaContract
     public function scopeOfType(Builder $query, string $type): Builder
     {
         return $query->where('type', $type);
-    }
-
-    /**
-     * media allow collections.
-     *
-     * @return array
-     */
-    public function mediaAllowCollections(): array
-    {
-        return [
-            'base' => [
-                'media_collection' => 'public',
-                'size'             => [
-                    'default' => [
-                        'w' => config('unit-converter.default_image_size.width'),
-                        'h' => config('unit-converter.default_image_size.height'),
-                    ],
-                ],
-            ],
-        ];
     }
 }
