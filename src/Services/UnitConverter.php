@@ -1,6 +1,6 @@
 <?php
 
-namespace JobMetric\UnitConverter;
+namespace JobMetric\UnitConverter\Services;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -46,7 +46,6 @@ class UnitConverter extends AbstractCrudService
      * @var string
      */
     protected string $entityName = 'unit-converter::base.entity_names.unit';
-
 
     /**
      * Bound model/resource classes for the base CRUD.
@@ -272,7 +271,7 @@ class UnitConverter extends AbstractCrudService
      *
      * @return Response
      */
-    protected function show(int $id, array $with = [], ?string $mode = null): Response
+    public function show(int $id, array $with = [], ?string $mode = null): Response
     {
         $with = $this->ensureTranslationsRelation($with);
 
@@ -372,7 +371,6 @@ class UnitConverter extends AbstractCrudService
         return $value * (float) $fromUnit->value / (float) $toUnit->value;
     }
 
-
     /**
      * Find a unit by code (from translations).
      *
@@ -422,3 +420,4 @@ class UnitConverter extends AbstractCrudService
         }
     }
 }
+

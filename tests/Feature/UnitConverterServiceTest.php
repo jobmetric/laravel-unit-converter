@@ -14,7 +14,7 @@ use JobMetric\UnitConverter\Facades\UnitConverter as UnitConverterFacade;
 use JobMetric\UnitConverter\Models\Unit;
 use JobMetric\UnitConverter\Tests\Stubs\Models\Product;
 use JobMetric\UnitConverter\Tests\TestCase as BaseTestCase;
-use JobMetric\UnitConverter\UnitConverter;
+use JobMetric\UnitConverter\Services\UnitConverter;
 use Throwable;
 
 /**

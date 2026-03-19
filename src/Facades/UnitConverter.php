@@ -5,7 +5,7 @@ namespace JobMetric\UnitConverter\Facades;
 use Illuminate\Support\Facades\Facade;
 
 /**
- * @mixin \JobMetric\UnitConverter\UnitConverter
+ * @mixin \JobMetric\UnitConverter\Services\UnitConverter
  *
  * @method static \JobMetric\PackageCore\Output\Response store(array $data)
  * @method static \JobMetric\PackageCore\Output\Response show(int $unitId, array $with = [], ?string $mode = null)

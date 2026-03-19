@@ -10,6 +10,7 @@ use JobMetric\UnitConverter\Commands\UnitConvertCommand;
 use JobMetric\UnitConverter\Commands\UnitExportCommand;
 use JobMetric\UnitConverter\Commands\UnitListCommand;
 use JobMetric\UnitConverter\Commands\UnitSeedCommand;
+use JobMetric\UnitConverter\Services\UnitConverter;
 
 class UnitConverterServiceProvider extends PackageCoreServiceProvider
 {
