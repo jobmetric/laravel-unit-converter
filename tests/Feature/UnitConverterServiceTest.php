@@ -12,9 +12,9 @@ use JobMetric\UnitConverter\Exceptions\UnitTypeUseDefaultValueException;
 use JobMetric\UnitConverter\Exceptions\UnitTypeUsedInException;
 use JobMetric\UnitConverter\Facades\UnitConverter as UnitConverterFacade;
 use JobMetric\UnitConverter\Models\Unit;
+use JobMetric\UnitConverter\Services\UnitConverter;
 use JobMetric\UnitConverter\Tests\Stubs\Models\Product;
 use JobMetric\UnitConverter\Tests\TestCase as BaseTestCase;
-use JobMetric\UnitConverter\Services\UnitConverter;
 use Throwable;
 
 /**
@@ -61,6 +61,8 @@ class UnitConverterServiceTest extends BaseTestCase
     }
 
     /**
+     * Verify store persists unit with translation payload and expected defaults.
+     *
      * @throws Throwable
      */
     public function test_store_creates_unit_with_translations(): void
@@ -95,6 +97,8 @@ class UnitConverterServiceTest extends BaseTestCase
     }
 
     /**
+     * Verify creating first unit in a type with value other than one is rejected.
+     *
      * @throws Throwable
      */
     public function test_first_unit_in_type_must_have_value_one(): void
@@ -108,6 +112,8 @@ class UnitConverterServiceTest extends BaseTestCase
     }
 
     /**
+     * Verify second unit in same type cannot reuse the default value of one.
+     *
      * @throws Throwable
      */
     public function test_second_unit_cannot_have_value_one(): void
@@ -138,6 +144,8 @@ class UnitConverterServiceTest extends BaseTestCase
     }
 
     /**
+     * Verify update changes persisted numeric value and translation fields.
+     *
      * @throws Throwable
      */
     public function test_update_unit(): void
@@ -191,6 +199,8 @@ class UnitConverterServiceTest extends BaseTestCase
     }
 
     /**
+     * Verify base unit value cannot be changed away from one on update.
+     *
      * @throws Throwable
      */
     public function test_cannot_change_base_unit_value_from_one(): void
@@ -212,6 +222,8 @@ class UnitConverterServiceTest extends BaseTestCase
     }
 
     /**
+     * Verify destroy removes a deletable unit and its database row.
+     *
      * @throws Throwable
      */
     public function test_destroy_unit(): void
@@ -242,6 +254,8 @@ class UnitConverterServiceTest extends BaseTestCase
     }
 
     /**
+     * Verify deleting base unit is blocked while other units of same type exist.
+     *
      * @throws Throwable
      */
     public function test_cannot_delete_base_unit_when_other_units_exist(): void
@@ -278,6 +292,8 @@ class UnitConverterServiceTest extends BaseTestCase
     }
 
     /**
+     * Verify deleting a unit currently used by relations is rejected.
+     *
      * @throws Throwable
      */
     public function test_cannot_delete_unit_that_is_used(): void
@@ -308,6 +324,8 @@ class UnitConverterServiceTest extends BaseTestCase
     }
 
     /**
+     * Verify getObject returns the requested unit instance and attributes.
+     *
      * @throws Throwable
      */
     public function test_get_unit(): void
@@ -336,6 +354,8 @@ class UnitConverterServiceTest extends BaseTestCase
     }
 
     /**
+     * Verify getObject returns unit model for a valid identifier.
+     *
      * @throws Throwable
      */
     public function test_get_object(): void
@@ -356,6 +376,8 @@ class UnitConverterServiceTest extends BaseTestCase
     }
 
     /**
+     * Verify getObject throws when unit does not exist.
+     *
      * @throws Throwable
      */
     public function test_get_object_throws_when_not_found(): void
@@ -368,6 +390,8 @@ class UnitConverterServiceTest extends BaseTestCase
     }
 
     /**
+     * Verify convert returns numeric result for units in the same type.
+     *
      * @throws Throwable
      */
     public function test_convert_same_type_units(): void
@@ -420,6 +444,8 @@ class UnitConverterServiceTest extends BaseTestCase
     }
 
     /**
+     * Verify convert throws when source and destination unit types differ.
+     *
      * @throws Throwable
      */
     public function test_convert_throws_when_different_types(): void
@@ -457,6 +483,8 @@ class UnitConverterServiceTest extends BaseTestCase
     }
 
     /**
+     * Verify usedIn returns relation collection count for the target unit.
+     *
      * @throws Throwable
      */
     public function test_used_in(): void
@@ -494,6 +522,8 @@ class UnitConverterServiceTest extends BaseTestCase
     }
 
     /**
+     * Verify hasUsed reports false/true based on relation existence.
+     *
      * @throws Throwable
      */
     public function test_has_used(): void
@@ -516,6 +546,8 @@ class UnitConverterServiceTest extends BaseTestCase
     }
 
     /**
+     * Verify changeDefaultValue re-normalizes values and assigns new base unit.
+     *
      * @throws Throwable
      */
     public function test_change_default_value(): void
@@ -563,6 +595,8 @@ class UnitConverterServiceTest extends BaseTestCase
     }
 
     /**
+     * Verify facade API resolves and proxies store action successfully.
+     *
      * @throws Throwable
      */
     public function test_facade_works(): void
@@ -584,6 +618,8 @@ class UnitConverterServiceTest extends BaseTestCase
     }
 
     /**
+     * Verify unit records can be queried by type using model scope.
+     *
      * @throws Throwable
      */
     public function test_list_units_by_type(): void
@@ -622,6 +658,8 @@ class UnitConverterServiceTest extends BaseTestCase
     }
 
     /**
+     * Verify toggleStatus flips status state on consecutive calls.
+     *
      * @throws Throwable
      */
     public function test_toggle_status(): void

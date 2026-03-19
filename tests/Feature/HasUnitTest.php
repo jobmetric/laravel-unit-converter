@@ -20,6 +20,8 @@ use Throwable;
 class HasUnitTest extends BaseTestCase
 {
     /**
+     * Verify unit payload is persisted automatically when model is created.
+     *
      * @throws Throwable
      */
     public function test_store_unit_autosaving_on_create(): void
@@ -42,6 +44,8 @@ class HasUnitTest extends BaseTestCase
     }
 
     /**
+     * Verify unit payload is upserted automatically on subsequent model updates.
+     *
      * @throws Throwable
      */
     public function test_store_unit_autosaving_on_update(): void
@@ -88,6 +92,8 @@ class HasUnitTest extends BaseTestCase
     }
 
     /**
+     * Verify storeUnit attaches one unit relation with provided key and value.
+     *
      * @throws Throwable
      */
     public function test_store_unit_method(): void
@@ -111,6 +117,8 @@ class HasUnitTest extends BaseTestCase
     }
 
     /**
+     * Verify storeUnitBatch persists multiple unit relations in one call.
+     *
      * @throws Throwable
      */
     public function test_store_unit_batch(): void
@@ -152,6 +160,8 @@ class HasUnitTest extends BaseTestCase
     }
 
     /**
+     * Verify getUnit returns related unit object and stored value for existing key.
+     *
      * @throws Throwable
      */
     public function test_get_unit(): void
@@ -172,6 +182,8 @@ class HasUnitTest extends BaseTestCase
     }
 
     /**
+     * Verify getUnit returns null values when the requested key is not attached.
+     *
      * @throws Throwable
      */
     public function test_get_unit_returns_null_when_not_found(): void
@@ -187,6 +199,8 @@ class HasUnitTest extends BaseTestCase
     }
 
     /**
+     * Verify getUnits returns a keyed collection for all attached unit relations.
+     *
      * @throws Throwable
      */
     public function test_get_units(): void
@@ -213,6 +227,8 @@ class HasUnitTest extends BaseTestCase
     }
 
     /**
+     * Verify getUnitValues returns key-to-value mapping for attached units.
+     *
      * @throws Throwable
      */
     public function test_get_unit_values(): void
@@ -236,6 +252,8 @@ class HasUnitTest extends BaseTestCase
     }
 
     /**
+     * Verify hasUnit reflects whether a specific unit key exists on the model.
+     *
      * @throws Throwable
      */
     public function test_has_unit(): void
@@ -252,6 +270,8 @@ class HasUnitTest extends BaseTestCase
     }
 
     /**
+     * Verify forgetUnit removes a specific unit key and its pivot record.
+     *
      * @throws Throwable
      */
     public function test_forget_unit(): void
@@ -277,6 +297,8 @@ class HasUnitTest extends BaseTestCase
     }
 
     /**
+     * Verify forgetUnits removes all attached unit relations from the model.
+     *
      * @throws Throwable
      */
     public function test_forget_units_all(): void
@@ -309,6 +331,8 @@ class HasUnitTest extends BaseTestCase
     }
 
     /**
+     * Verify deleting a parent model also removes related unit relation records.
+     *
      * @throws Throwable
      */
     public function test_unit_relations_deleted_on_model_delete(): void
@@ -341,6 +365,8 @@ class HasUnitTest extends BaseTestCase
     }
 
     /**
+     * Verify storing an unallowed unit key throws type validation exception.
+     *
      * @throws Throwable
      */
     public function test_disallowed_unit_key_throws_exception(): void
@@ -358,6 +384,8 @@ class HasUnitTest extends BaseTestCase
     }
 
     /**
+     * Verify wildcard unitable configuration accepts any arbitrary unit key.
+     *
      * @throws Throwable
      */
     public function test_wildcard_unitables_allows_any_key(): void
@@ -381,6 +409,8 @@ class HasUnitTest extends BaseTestCase
     }
 
     /**
+     * Verify attaching a non-existent unit id throws not-found exception.
+     *
      * @throws Throwable
      */
     public function test_unit_not_found_throws_exception(): void
@@ -395,6 +425,8 @@ class HasUnitTest extends BaseTestCase
     }
 
     /**
+     * Verify hasUnitKey scope returns only models having the requested unit key.
+     *
      * @throws Throwable
      */
     public function test_scope_has_unit_key(): void
@@ -416,6 +448,8 @@ class HasUnitTest extends BaseTestCase
     }
 
     /**
+     * Verify whereUnitEquals scope filters by key, unit id, and optional value.
+     *
      * @throws Throwable
      */
     public function test_scope_where_unit_equals(): void
@@ -443,6 +477,8 @@ class HasUnitTest extends BaseTestCase
     }
 
     /**
+     * Verify units morph-to-many relation returns attached unit models.
+     *
      * @throws Throwable
      */
     public function test_units_relation(): void
@@ -475,6 +511,8 @@ class HasUnitTest extends BaseTestCase
     }
 
     /**
+     * Verify unitRelations morph-many relation exposes pivot metadata correctly.
+     *
      * @throws Throwable
      */
     public function test_unit_relations_morphmany(): void
